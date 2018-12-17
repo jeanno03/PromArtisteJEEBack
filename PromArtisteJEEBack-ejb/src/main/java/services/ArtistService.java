@@ -11,6 +11,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import entities.MySpace;
 import entities.MyUser;
 
@@ -63,6 +66,8 @@ public class ArtistService implements ArtistServiceLocal {
 	}
 
 	@Override
+//	@Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
+	@Transactional(propagation=Propagation.SUPPORTS, readOnly=true, noRollbackFor=Exception.class)
 	public List<MySpace> getAllMySpace() {
 		// TODO Auto-generated method stub
 
@@ -77,6 +82,7 @@ public class ArtistService implements ArtistServiceLocal {
 	}
 
 	@Override
+//	@Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
 	public List<MyUser> getAllMyUser() {
 		// TODO Auto-generated method stub
 
@@ -91,6 +97,7 @@ public class ArtistService implements ArtistServiceLocal {
 	}
 	
 	@Override
+//	@Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
 	public MyUser getMyUser(Long id) {
 		MyUser myUser = getUserByEmail(id);
 		return myUser;

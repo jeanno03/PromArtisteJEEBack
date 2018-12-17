@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,12 +16,17 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @Entity
 @NamedQueries({
 	@NamedQuery(name="entities.MyUser.selectAll",
 			query = "select m from MyUser m"),
 })
-@XmlRootElement(name = "myuser")
+@JsonInclude
+//@XmlRootElement(name = "myuser")
 public class MyUser implements Serializable{
 	
 	/**
@@ -36,7 +42,10 @@ public class MyUser implements Serializable{
 	private String firstName;
 	private String lastName;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy="myUser")
+//	@OneToMany(fetch = FetchType.EAGER, mappedBy="myUser")
+	@OneToMany(mappedBy="myUser", cascade={CascadeType.ALL})
+//	@JsonBackReference  
+//    @JsonIgnore
 	private Collection<MySpace> mySpaces;
 	
 	public MyUser() {

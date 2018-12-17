@@ -11,6 +11,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import entities.MySpace;
 import entities.MyUser;
@@ -33,6 +37,8 @@ public class ArtistController {
 
 	@GET
 	@Path("/testMyUsers")
+//	http://localhost:8080/PromArtisteJEEBack-web/rest/ArtistController/testMyUsers
+	@Produces({MediaType.APPLICATION_JSON}) 
 	public String dataTestestMyUsers(){
 		String myUsersString = artistServiceLocal.getMyUserDataTest();
 		return myUsersString;
@@ -40,6 +46,7 @@ public class ArtistController {
 
 	@GET
 	@Path("/getMySpaceList")
+	@Produces({MediaType.APPLICATION_JSON}) 
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/ArtistController/getMySpaceList
 	public String getMySpaceList(){
 		List<MySpace> mySpaces = artistServiceLocal.getAllMySpace();
@@ -54,6 +61,8 @@ public class ArtistController {
 
 	@GET
 	@Path("/getMySpaceList02")
+	@Produces({MediaType.APPLICATION_JSON}) 
+//	@Transactional(propagation=Propagation.SUPPORTS, readOnly=true, noRollbackFor=Exception.class)
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/ArtistController/getMySpaceList02
 	//Cela générera un fichier XML d'une profondeur infinie ==> A revoir
 	public List<MySpace> getMySpaceList02(){
@@ -69,6 +78,7 @@ public class ArtistController {
 
 	@GET
 	@Path("/getMyUserList")
+	@Produces({MediaType.APPLICATION_JSON}) 
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/ArtistController/getMyUserList
 	public String getMyUserList(){
 		List<MyUser> myUsers = artistServiceLocal.getAllMyUser();
@@ -85,6 +95,7 @@ public class ArtistController {
 
 	@GET
 	@Path("/getMyUserList02")
+	@Produces({MediaType.APPLICATION_JSON}) 
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/ArtistController/getMyUserList02
 	//Cela générera un fichier XML d'une profondeur infinie ==> A revoir
 	public List<MyUser> getMyUserList02(){
@@ -101,6 +112,7 @@ public class ArtistController {
 	
 	@GET
 	@Path("/getMyUser/{id}")
+	@Produces({MediaType.APPLICATION_JSON}) 
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/ArtistController/getMyUser/2
 	//could not initialize proxy [entities.MyUser#2] - no Session ==> A revoir
 	public MyUser getMyUser(@PathParam("id") Long id) {
@@ -109,7 +121,28 @@ public class ArtistController {
 		return null;
 	}
 	
-
+	@GET
+	@Path("/getTestMyUser")
+	@Produces({MediaType.APPLICATION_JSON}) 
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/ArtistController/getTestMyUser
+	public MyUser getTestMyUser() {
+		MyUser my = new MyUser("go@go.com","Gia","Gio","Ga");
+//		MySpace ma = new MySpace(10L,"roi");
+//		ma.setMyUser(my);
+		return my;
+	}
+	
+	@GET
+	@Path("/getTestMySpace")
+	@Produces({MediaType.APPLICATION_JSON}) 
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/ArtistController/getTestMySpace
+	public MySpace getTestMySpace() {
+		MyUser my = new MyUser("go@go.com","Gia","Gio","Ga");
+		MySpace ma = new MySpace(10L,"roi");
+		ma.setMyUser(my);
+		return ma;
+	}
+	
 	private ArtistServiceLocal lookupArtistServiceLocal() {
 		try {
 			Context c = new InitialContext();

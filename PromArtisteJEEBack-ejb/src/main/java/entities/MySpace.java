@@ -6,17 +6,23 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @NamedQueries({
 	@NamedQuery(name="entities.MySpace.selectAll",
 			query = "select m from MySpace m"),
 })
-@XmlRootElement(name = "myspace")
+@JsonInclude
+//@XmlRootElement(name = "myspace")
 public class MySpace implements Serializable{
 	
     /**
@@ -30,10 +36,18 @@ public class MySpace implements Serializable{
     private String name;
     
     @ManyToOne
+    @JoinColumn(name="myuser_id")
+//    @JsonManagedReference   
     private MyUser myUser;
     
 	public MySpace() {
 		super();
+	}
+
+	public MySpace(Long id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
 	}
 
 	public MySpace(String name) {
