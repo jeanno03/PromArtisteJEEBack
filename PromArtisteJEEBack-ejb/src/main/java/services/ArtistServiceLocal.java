@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import dto.MyUserDto;
 import entities.MySpace;
 import entities.MyUser;
 
@@ -13,8 +14,7 @@ public interface ArtistServiceLocal {
 	public String getMyUserDataTest();
 	public List<MySpace> getAllMySpace();
 	public List<MyUser> getAllMyUser();
-	public MyUser getMyUser(Long id);
-	
-	
+	public List<MyUserDto> getAllMyUserDto() ;
+	public MyUserDto getMyUserDto(Long id);
 
 }

@@ -1,6 +1,8 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,8 +13,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import dto.MySpaceDto;
+import dto.MyUserDto;
+
+//import org.springframework.transaction.annotation.Propagation;
+//import org.springframework.transaction.annotation.Transactional;
 
 import entities.MySpace;
 import entities.MyUser;
@@ -66,8 +71,6 @@ public class ArtistService implements ArtistServiceLocal {
 	}
 
 	@Override
-//	@Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
-	@Transactional(propagation=Propagation.SUPPORTS, readOnly=true, noRollbackFor=Exception.class)
 	public List<MySpace> getAllMySpace() {
 		// TODO Auto-generated method stub
 
@@ -82,7 +85,6 @@ public class ArtistService implements ArtistServiceLocal {
 	}
 
 	@Override
-//	@Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
 	public List<MyUser> getAllMyUser() {
 		// TODO Auto-generated method stub
 
@@ -97,14 +99,59 @@ public class ArtistService implements ArtistServiceLocal {
 	}
 	
 	@Override
-//	@Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
-	public MyUser getMyUser(Long id) {
-		MyUser myUser = getUserByEmail(id);
-		return myUser;
-	}
+	public List<MyUserDto> getAllMyUserDto() {
+		// TODO Auto-generated method stub
 
+		TypedQuery<MyUser> qr = em.createNamedQuery("entities.MyUser.selectAll", MyUser.class);		
+		try {
+			List<MyUser>  myUsers=qr.getResultList();
+			List<MyUserDto> myUserDtoReturn = returnListMyUserDto(myUsers);
+			return myUserDtoReturn;
+			
+		}catch(Exception ex) {
+			System.out.println("exception : " + ex);
+		}
+		return null;
+	}
 	
 	private MyUser getUserByEmail(Long id) {
 		return em.getReference(MyUser.class, id);
+	}
+	
+	private List<MyUserDto> returnListMyUserDto(List<MyUser> myUserList){
+		List<MyUserDto> myUserDtoList = new ArrayList();
+		for(MyUser m : myUserList) {
+			
+			MyUserDto myUserDto = new MyUserDto(m.getId(), m.getEmail(), m.getArtistName(),	m.getFirstName(), m.getLastName());
+			
+			List<MySpaceDto> mySpaceDtos = new ArrayList();
+			Collection<MySpace> mySpaces = mySpaces = m.getMySpaces();
+			
+			
+			for(MySpace m2 : mySpaces) {
+				MySpaceDto mySpaceDto = new MySpaceDto(m2.getId(),m2.getName());
+				mySpaceDtos.add(mySpaceDto);
+			}
+			
+			myUserDto.setMySpacesDto(mySpaceDtos);
+			myUserDtoList.add(myUserDto);
+		}
+		return myUserDtoList;
+	}
+
+	@Override
+	public MyUserDto getMyUserDto(Long id) {
+		MyUser myUser = getUserByEmail(id);
+		MyUserDto myUserDto = new MyUserDto (myUser.getId(), myUser.getArtistName(), myUser.getEmail(), myUser.getFirstName(), myUser.getLastName());
+		List<MySpaceDto> mySpaceDtos = new ArrayList();
+		
+		Collection<MySpace> mySpaces = myUser.getMySpaces();
+		
+		for(MySpace m : mySpaces) {
+			MySpaceDto mySpaceDto = new MySpaceDto(m.getId(),m.getName());
+			mySpaceDtos.add(mySpaceDto);
+		}
+		myUserDto.setMySpacesDto(mySpaceDtos);
+		return myUserDto;
 	}
 }
