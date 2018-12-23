@@ -1,6 +1,11 @@
 package dto;
 
+import java.util.ArrayList;
 import java.util.Collection;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import entities.MySpace;
 
@@ -15,10 +20,11 @@ public class MyUserDto {
 	
 	public MyUserDto() {
 		super();
+		mySpacesDto = new ArrayList();
 	}
 	
 	public MyUserDto(Long id, String email, String artistName, String firstName, String lastName) {
-		super();
+		this();
 		this.id = id;
 		this.email = email;
 		this.artistName = artistName;
@@ -58,6 +64,7 @@ public class MyUserDto {
 		this.lastName = lastName;
 	}
 	
+	@JsonBackReference
 	public Collection<MySpaceDto> getMySpacesDto() {
 		return mySpacesDto;
 	}

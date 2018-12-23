@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ejb.Local;
 
 import dto.MyUserDto;
+import dto.MyVideoDto;
 import entities.MySpace;
 import entities.MyUser;
 
@@ -16,5 +17,7 @@ public interface ArtistServiceLocal {
 	public List<MyUser> getAllMyUser();
 	public List<MyUserDto> getAllMyUserDto() ;
 	public MyUserDto getMyUserDto(Long id);
+
+	public List<MyVideoDto> getAllMyVideoDto();
 
 }

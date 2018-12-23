@@ -3,6 +3,7 @@ package entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -19,6 +20,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import dto.MySpaceDto;
+import dto.MyUserDto;
+import dto.MyVideoDto;
 
 @Entity
 @NamedQueries({
@@ -44,8 +49,6 @@ public class MyUser implements Serializable{
 	
 //	@OneToMany(fetch = FetchType.EAGER, mappedBy="myUser")
 	@OneToMany(mappedBy="myUser", cascade={CascadeType.ALL})
-//	@JsonBackReference  
-//    @JsonIgnore
 	private Collection<MySpace> mySpaces;
 	
 	public MyUser() {
@@ -106,6 +109,31 @@ public class MyUser implements Serializable{
 	public String toString() {
 		return "MyUser [id=" + id + ", email=" + email + ", artistName=" + artistName + ", firstName=" + firstName
 				+ ", lastName=" + lastName + "]";
+	}
+	
+	public MyUserDto getMyUserDto() {
+		MyUserDto myUserDto = new MyUserDto(this.id,this.email,this.artistName,this.firstName,this.lastName);
+		List<MySpaceDto> mySpacesDto = new ArrayList();
+		
+		for(MySpace m : this.mySpaces) {
+			
+			MySpaceDto mySpaceDto = new MySpaceDto (m.getId(), m.getName());
+			List<MyVideoDto> myVideosDto = new ArrayList();
+			
+			for(MyVideo m2 : m.getMyVideos()) {
+				
+				MyVideoDto myVideoDto = new MyVideoDto (m2.getId(), m2.getName());
+				myVideosDto.add(myVideoDto);
+			}
+			
+			mySpaceDto.setMyVideosDto(myVideosDto);
+			
+			mySpacesDto.add(mySpaceDto);
+			
+			myUserDto.setMySpacesDto(mySpacesDto);
+
+		}
+		return myUserDto;		
 	}
 		
 }
