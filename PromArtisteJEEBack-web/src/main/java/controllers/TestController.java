@@ -20,6 +20,7 @@ import entities.MyUser;
 import services.ArtistServiceLocal;
 
 @Path("/TestController")
+//@CrossOrigin("*")
 public class TestController {
 
 	ArtistServiceLocal artistServiceLocal = lookupArtistServiceLocal();
@@ -34,32 +35,6 @@ public class TestController {
 	public String helloWorld() {
 		
 		return "Hello World";
-	}
-	
-	@GET
-	@Path("/getTestMyUser")
-	@Produces({MediaType.APPLICATION_JSON}) 
-	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/getTestMyUser
-	//Object sans base ==> fonctionne nickel
-	public MyUser getTestMyUser() {
-		
-		MyUser my = new MyUser("go@go.com","Gia","Gio","Ga");
-		
-		return my;
-	}
-
-	@GET
-	@Path("/getTestMySpace")
-	@Produces({MediaType.APPLICATION_JSON}) 
-	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/getTestMySpace
-	//Object sans base ==> fonctionne nickel
-	public MySpace getTestMySpace() {
-		
-		MyUser my = new MyUser("go@go.com","Gia","Gio","Ga");
-		MySpace ma = new MySpace(10L,"roi");
-		ma.setMyUser(my);
-		
-		return ma;
 	}
 
 	@GET

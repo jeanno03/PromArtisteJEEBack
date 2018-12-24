@@ -12,8 +12,11 @@ import services.ArtistService;
 @ApplicationPath("/rest")
 public class MyRestApplication extends Application{
 	
+	//http://www.codingpedia.org/ama/how-to-enable-cors-filter-in-resteasy
+	
     @Override
     public Set<Class<?>> getClasses() {
+   	
         Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(TestController.class);
         return classes;

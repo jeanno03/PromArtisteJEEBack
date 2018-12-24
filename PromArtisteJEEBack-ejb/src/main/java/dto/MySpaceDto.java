@@ -49,7 +49,6 @@ public class MySpaceDto {
 		this.myUserDto = myUserDto;
 	}
 
-//	@JsonBackReference
 	public Collection<MyVideoDto> getMyVideosDto() {
 		return myVideosDto;
 	}

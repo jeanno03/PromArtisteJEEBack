@@ -64,7 +64,6 @@ public class MyUserDto {
 		this.lastName = lastName;
 	}
 	
-	@JsonBackReference
 	public Collection<MySpaceDto> getMySpacesDto() {
 		return mySpacesDto;
 	}
