@@ -155,20 +155,20 @@ public class ArtistService implements ArtistServiceLocal {
 
 		TypedQuery<MyVideo> qr = em.createNamedQuery("entities.MyVideo.selectAll", MyVideo.class);
 		try {
-			
+
 			List<MyVideoDto> myVideosDto = new ArrayList();
-			
+
 			List<MyVideo> myVideos = qr.getResultList();
-			
+
 			for(MyVideo m : myVideos) {
 				MyVideoDto myVideoDto = m.getMyVideoDto();
 				myVideosDto.add(myVideoDto);
 			}
 			return myVideosDto;
 
-			}catch(Exception ex) {
-				System.out.println("exception : " + ex);
-			}
+		}catch(Exception ex) {
+			System.out.println("exception : " + ex);
+		}
 
 
 		return null;
@@ -180,6 +180,27 @@ public class ArtistService implements ArtistServiceLocal {
 		MyUserDto myUserDto = myUser.getMyUserDto();
 
 		return myUserDto;
+	}
+
+	@Override
+	public void saveMyUser(MyUser myUser) {
+		//		MyUser myUserToSave = new MyUser(myUser.getEmail(), myUser.getArtistName(), myUser.getFirstName(), myUser.getLastName());
+		em.persist(myUser);
+
+	}
+
+	public MyUserDto getMyUserDtoByEmail(String email) {
+		TypedQuery<MyUser> qr = em.createNamedQuery("entities.MyUser.getByEmail",MyUser.class);
+		qr.setParameter("paramEmail", email);
+		try {
+			MyUser myUser = (MyUser) qr.getSingleResult();
+			MyUserDto myUserDto = myUser.getMyUserDto();
+			return myUserDto;
+			
+		} catch (NullPointerException ex) {
+			//
+		}
+		return null;
 	}
 
 

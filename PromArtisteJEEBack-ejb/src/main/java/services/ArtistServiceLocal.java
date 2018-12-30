@@ -17,7 +17,8 @@ public interface ArtistServiceLocal {
 	public List<MyUser> getAllMyUser();
 	public List<MyUserDto> getAllMyUserDto() ;
 	public MyUserDto getMyUserDto(Long id);
-
 	public List<MyVideoDto> getAllMyVideoDto();
+	public void saveMyUser(MyUser myUser);
+	public MyUserDto getMyUserDtoByEmail(String email);
 
 }

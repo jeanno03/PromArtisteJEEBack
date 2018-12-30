@@ -15,6 +15,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -29,33 +31,39 @@ import dto.MyVideoDto;
 @NamedQueries({
 	@NamedQuery(name="entities.MyUser.selectAll",
 			query = "select m from MyUser m"),
+	@NamedQuery(name="entities.MyUser.getByEmail",
+			query = "select m from MyUser m where m.email = :paramEmail")
 })
 @JsonInclude
 //@XmlRootElement(name = "myuser")
+@Table(name="myuser",
+uniqueConstraints = {@UniqueConstraint(columnNames={"email", "artistName"})}
+)
 public class MyUser implements Serializable{
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
 	private String email;
 	private String artistName;
 	private String firstName;
 	private String lastName;
-	
-//	@OneToMany(fetch = FetchType.EAGER, mappedBy="myUser")
+
+	//	@OneToMany(fetch = FetchType.EAGER, mappedBy="myUser")
 	@OneToMany(mappedBy="myUser", cascade={CascadeType.ALL})
 	private Collection<MySpace> mySpaces;
-	
+
 	public MyUser() {
 		super();
 		mySpaces = new ArrayList();
 	}
-	
+
 	public MyUser(String email, String artistName, String firstName, String lastName) {
 		super();
 		this.email = email;
@@ -63,7 +71,7 @@ public class MyUser implements Serializable{
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -96,7 +104,7 @@ public class MyUser implements Serializable{
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}		
-	
+
 	public Collection<MySpace> getMySpaces() {
 		return mySpaces;
 	}
@@ -110,30 +118,28 @@ public class MyUser implements Serializable{
 		return "MyUser [id=" + id + ", email=" + email + ", artistName=" + artistName + ", firstName=" + firstName
 				+ ", lastName=" + lastName + "]";
 	}
-	
+
 	public MyUserDto getMyUserDto() {
 		MyUserDto myUserDto = new MyUserDto(this.id,this.email,this.artistName,this.firstName,this.lastName);
 		List<MySpaceDto> mySpacesDto = new ArrayList();
-		
+
 		for(MySpace m : this.mySpaces) {
-			
+
 			MySpaceDto mySpaceDto = new MySpaceDto (m.getId(), m.getName());
 			List<MyVideoDto> myVideosDto = new ArrayList();
-			
+
 			for(MyVideo m2 : m.getMyVideos()) {
-				
+
 				MyVideoDto myVideoDto = new MyVideoDto (m2.getId(), m2.getName());
 				myVideosDto.add(myVideoDto);
 			}
-			
+
 			mySpaceDto.setMyVideosDto(myVideosDto);
-			
 			mySpacesDto.add(mySpaceDto);
-			
 			myUserDto.setMySpacesDto(mySpacesDto);
 
 		}
 		return myUserDto;		
 	}
-		
+
 }
