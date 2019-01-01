@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import dto.MyPictureDto;
 import dto.MySpaceDto;
 import dto.MyUserDto;
 import dto.MyVideoDto;
@@ -33,27 +34,31 @@ import dto.MyVideoDto;
 @JsonInclude
 //@XmlRootElement(name = "myspace")
 public class MySpace implements Serializable{
-	
-    /**
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    
-    @ManyToOne
-    @JoinColumn(name="myuser_id")
-    private MyUser myUser;
-    
-    @OneToMany(mappedBy="mySpace", cascade= {CascadeType.ALL})
-    private Collection<MyVideo> myVideos;
-    
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String name;
+
+	@ManyToOne
+	@JoinColumn(name="myuser_id")
+	private MyUser myUser;
+
+	@OneToMany(mappedBy="mySpace", cascade= {CascadeType.ALL})
+	private Collection<MyVideo> myVideos;
+
+	@OneToMany(mappedBy="mySpace", cascade= {CascadeType.ALL})  
+	private Collection<MyPicture> myPictures;
+
 	public MySpace() {
 		super();
 		myVideos = new ArrayList();
+		myPictures = new ArrayList();
 	}
 
 	public MySpace(Long id, String name) {
@@ -82,7 +87,7 @@ public class MySpace implements Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public MyUser getMyUser() {
 		return myUser;
 	}
@@ -97,29 +102,55 @@ public class MySpace implements Serializable{
 
 	public void setMyVideos(Collection<MyVideo> myVideos) {
 		this.myVideos = myVideos;
+	}	
+
+	public Collection<MyPicture> getMyPictures() {
+		return myPictures;
+	}
+
+	public void setMyPictures(Collection<MyPicture> myPictures) {
+		this.myPictures = myPictures;
 	}
 
 	@Override
 	public String toString() {
 		return "MySpace [id=" + id + ", name=" + name + "]";
 	}    
-	
+
 	public MySpaceDto getMySpaceDto() {
-		
+
 		MySpaceDto mySpaceDto = new MySpaceDto(this.id,this.name);
-		
+
 		MyUserDto myUserDto = new MyUserDto(this.myUser.getId(),this.myUser.getEmail(), this.myUser.getArtistName(), this.myUser.getFirstName(), this.myUser.getLastName());
-		
+
 		mySpaceDto.setMyUserDto(myUserDto);
-		
-		List<MyVideoDto> myVideosDto = new ArrayList();
-		for(MyVideo m : myVideos) {
-			MyVideoDto myVideoDto = new MyVideoDto (m.getId(), m.getName());
-			myVideosDto.add(myVideoDto);
+
+		try {
+			List<MyVideoDto> myVideosDto = new ArrayList();
+			for(MyVideo m : this.myVideos) {
+				MyVideoDto myVideoDto = new MyVideoDto (m.getId(), m.getName());
+				myVideosDto.add(myVideoDto);
+			}
+			mySpaceDto.setMyVideosDto(myVideosDto);
+
+		}catch(NullPointerException ex) {
+			ex.printStackTrace();
 		}
-		
-		mySpaceDto.setMyVideosDto(myVideosDto);
+
+		try {
+			List<MyPictureDto> myPicturesDto = new ArrayList();
+			for(MyPicture m : this.myPictures) {
+				MyPictureDto myPictureDto = new MyPictureDto(m.getId(), m.getRegisteredDate());
+				myPicturesDto.add(myPictureDto);
+			}
+
+			mySpaceDto.setMyPicturesDto(myPicturesDto);
+
+		}catch(NullPointerException ex) {
+			ex.printStackTrace();
+		}
 		return mySpaceDto;
 	}
+
 
 }

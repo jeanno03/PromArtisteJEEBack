@@ -32,13 +32,13 @@ import dto.MyVideoDto;
 	@NamedQuery(name="entities.MyUser.selectAll",
 			query = "select m from MyUser m"),
 	@NamedQuery(name="entities.MyUser.getByEmail",
-			query = "select m from MyUser m where m.email = :paramEmail")
+	query = "select m from MyUser m where m.email = :paramEmail")
 })
 @JsonInclude
 //@XmlRootElement(name = "myuser")
 @Table(name="myuser",
 uniqueConstraints = {@UniqueConstraint(columnNames={"email", "artistName"})}
-)
+		)
 public class MyUser implements Serializable{
 
 	/**
@@ -121,23 +121,31 @@ public class MyUser implements Serializable{
 
 	public MyUserDto getMyUserDto() {
 		MyUserDto myUserDto = new MyUserDto(this.id,this.email,this.artistName,this.firstName,this.lastName);
-		List<MySpaceDto> mySpacesDto = new ArrayList();
+		try {
+			List<MySpaceDto> mySpacesDto = new ArrayList();
 
-		for(MySpace m : this.mySpaces) {
+			for(MySpace m : this.mySpaces) {
 
-			MySpaceDto mySpaceDto = new MySpaceDto (m.getId(), m.getName());
-			List<MyVideoDto> myVideosDto = new ArrayList();
+				MySpaceDto mySpaceDto = new MySpaceDto (m.getId(), m.getName());
 
-			for(MyVideo m2 : m.getMyVideos()) {
+				try {
+					List<MyVideoDto> myVideosDto = new ArrayList();
+					for(MyVideo m2 : m.getMyVideos()) {
 
-				MyVideoDto myVideoDto = new MyVideoDto (m2.getId(), m2.getName());
-				myVideosDto.add(myVideoDto);
+						MyVideoDto myVideoDto = new MyVideoDto (m2.getId(), m2.getName());
+						myVideosDto.add(myVideoDto);
+					}
+
+					mySpaceDto.setMyVideosDto(myVideosDto);
+				}catch(NullPointerException ex) {
+					ex.printStackTrace();
+				}
+				mySpacesDto.add(mySpaceDto);
+				myUserDto.setMySpacesDto(mySpacesDto);
+
 			}
-
-			mySpaceDto.setMyVideosDto(myVideosDto);
-			mySpacesDto.add(mySpaceDto);
-			myUserDto.setMySpacesDto(mySpacesDto);
-
+		}catch(NullPointerException ex) {
+			ex.printStackTrace();
 		}
 		return myUserDto;		
 	}

@@ -28,16 +28,16 @@ public class MyVideo implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-	
+
 	@ManyToOne
 	@JoinColumn(name="myspace_id")
 	private MySpace mySpace;
-	
+
 	public MyVideo() {
 		super();
 	}
@@ -75,11 +75,15 @@ public class MyVideo implements Serializable{
 	public String toString() {
 		return "MyVideo [id=" + id + ", name=" + name + "]";
 	}
-	
+
 	public MyVideoDto getMyVideoDto() {
 		MyVideoDto myVideoDto = new MyVideoDto(this.id, this.name);
-		MySpaceDto mySpaceDto = new MySpaceDto(this.mySpace.getId(), this.mySpace.getName());
-		myVideoDto.setMySpaceDto(mySpaceDto);
+		try {
+			MySpaceDto mySpaceDto = new MySpaceDto(this.mySpace.getId(), this.mySpace.getName());
+			myVideoDto.setMySpaceDto(mySpaceDto);
+		}catch(NullPointerException ex) {
+			ex.printStackTrace();
+		}
 		return myVideoDto;	
 	}
 

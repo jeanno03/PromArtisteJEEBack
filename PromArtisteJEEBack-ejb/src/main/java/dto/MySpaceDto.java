@@ -3,16 +3,20 @@ package dto;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import entities.MyPicture;
+
 public class MySpaceDto {
 	
 	private Long id;
     private String name;
     private MyUserDto myUserDto;
     private Collection <MyVideoDto> myVideosDto;   
+    private Collection <MyPictureDto> myPicturesDto;
     
 	public MySpaceDto() {
 		super();
 		myVideosDto = new ArrayList();
+		myPicturesDto = new ArrayList();
 	}
 
 	public MySpaceDto(Long id, String name) {
@@ -51,6 +55,14 @@ public class MySpaceDto {
 
 	public void setMyVideosDto(Collection<MyVideoDto> myVideosDto) {
 		this.myVideosDto = myVideosDto;
+	}
+
+	public Collection<MyPictureDto> getMyPicturesDto() {
+		return myPicturesDto;
+	}
+
+	public void setMyPicturesDto(Collection<MyPictureDto> myPicturesDto) {
+		this.myPicturesDto = myPicturesDto;
 	}
 
 	@Override

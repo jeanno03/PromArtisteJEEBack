@@ -10,11 +10,11 @@ import javax.ejb.Stateless;
 @LocalBean
 public class FileService implements FileServiceLocal {
 
-    /**
-     * Default constructor. 
-     */
-    public FileService() {
-        // TODO Auto-generated constructor stub
-    }
+	/**
+	 * Default constructor. 
+	 */
+	public FileService() {
+		// TODO Auto-generated constructor stub
+	}
 
 }

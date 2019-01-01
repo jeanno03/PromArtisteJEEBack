@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,17 +31,31 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
+import dto.MyPictureDto;
 import dto.MyUserDto;
 import dto.MyVideoDto;
+import entities.MyPicture;
 import entities.MySpace;
 import entities.MyUser;
 import services.ArtistServiceLocal;
+import services.EjbService;
+import services.EjbServiceInterface;
+import services.FileServiceLocal;
+import services.FrontService;
+import services.FrontServiceInterface;
+import services.PathService;
+import services.PathServiceInterface;
 
 @Path("/TestController")
 public class TestController {
 
-	ArtistServiceLocal artistServiceLocal = lookupArtistServiceLocal();
-	private final String SERVER_UPLOAD_LOCATION_FOLDER = "/home/jeanno/PromoArtistFile/";
+	EjbServiceInterface ejbService = new EjbService();
+	FrontServiceInterface frontService = new FrontService ();
+	ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
+	FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
+	PathServiceInterface pathService = new PathService();
+
+	//	
 
 	public TestController() {
 		super();
@@ -49,6 +65,10 @@ public class TestController {
 	@Produces("text/plain")
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController
 	public String helloWorld() {
+		//Je dois récupérer le dernier id de picture
+		MyPicture mypicture = artistServiceLocal.getLastPicture();
+		String lastId = String.valueOf(mypicture.getId());
+		System.out.println("lastId : " + lastId);
 		return "Hello World";
 	}
 
@@ -125,7 +145,7 @@ public class TestController {
 			@PathParam("email") String email, 
 			@PathParam("artistName") String artistName,
 			@PathParam("firstName") String firstName,
-			@PathParam("lastName") String lastName) {
+			@PathParam("lastName") String lastName){
 		MyUser myUser = new MyUser(email, artistName, firstName, lastName);
 		artistServiceLocal.saveMyUser(myUser);
 
@@ -138,7 +158,7 @@ public class TestController {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/saveMyUserPost/")
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/saveMyUserPost/
-	public MyUserDto saveMyUser(MyUser myUser) {
+	public MyUserDto saveMyUser(MyUser myUser){
 		System.out.println(myUser.getArtistName());
 		artistServiceLocal.saveMyUser(myUser);
 		MyUserDto myUserDto = artistServiceLocal.getMyUserDtoByEmail(myUser.getEmail());
@@ -152,75 +172,67 @@ public class TestController {
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/upload/
 	public Response uploadFile(
 			MultipartFormDataInput input
-			) throws IOException { 
+			) throws IOException, InterruptedException { 
 
+		//Fonctionne mais méthode moin précise
 		//https://docs.jboss.org/resteasy/docs/2.2.1.GA/javadocs/org/jboss/resteasy/plugins/providers/multipart/MultipartFormDataInput.html
-		String fileName = "";
-		Map<String,List<InputPart>> testMap = input.getFormDataMap();
-		List<InputPart> inputParts = new ArrayList<InputPart> ();
-		for(Map.Entry<String, List<InputPart>> entry : testMap.entrySet()) {
-			System.out.println("key of Map : " + entry.getKey());
-			System.out.println("Value of Map : " + entry.getValue());
-			inputParts = entry.getValue();
-		}
+
+		//		Map<String,List<InputPart>> mapListInputPart = input.getFormDataMap();
+		//		List<InputPart> inputParts = new ArrayList<InputPart> ();
+
+		//		for(Map.Entry<String, List<InputPart>> entry : mapListInputPart.entrySet()) {
+		//			System.out.println("key of Map : " + entry.getKey());
+		//			System.out.println("Value of Map : " + entry.getValue());
+		//			inputParts = entry.getValue();
+		//		}	
+
+		
+		//********************************Important *********************************
+		//Méthode plus précise car il car il faut que le nom du form corresponde à nameToDetermineInForm
+		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
+		List<InputPart> inputParts = uploadForm.get("nameToDetermineInForm");
+		Date day = new Date();
+		String path = "";
 
 		for (InputPart inputPart : inputParts) {
 			try {
+
 				MultivaluedMap<String, String> header = inputPart.getHeaders();
-				fileName = getFileName(header);
+
+				//nom original du fichier à sauvegarder
+				String originName = frontService.getFileName(header);
 				//convert the uploaded file to inputstream
 				InputStream inputStream = inputPart.getBody(InputStream.class,null);
 				byte [] bytes = IOUtils.toByteArray(inputStream);
-				//constructs upload file path
-				fileName = SERVER_UPLOAD_LOCATION_FOLDER + fileName;
-				writeFile(bytes,fileName);
+
+				path = artistServiceLocal.createMyPicturePath(originName);
+
+				frontService.writeFile(bytes,path);
+				//délai pour écriture sur rerveur
+				Thread.sleep(2000);
+
+				MyPicture myPicture = new MyPicture(day, path, originName);
+				System.out.println("day : " + day);
+				System.out.println("path : " + path);
+				System.out.println("originName : " + originName);
+				MyPictureDto myPictureDto = artistServiceLocal.saveMyPicture(myPicture);
+				System.out.println("myPictureDto.getId() : " + myPictureDto.getId());
 				System.out.println("Done");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		return Response.status(200)
-				.entity("uploadFile is called, Uploaded file name : " + fileName).build();
+				.entity("uploadFile to path : " + path).build();
 	}
 
 
-	private String getFileName(MultivaluedMap<String, String> header) {
-		String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
-		for (String filename : contentDisposition) {
-			if ((filename.trim().startsWith("filename"))) {
-				String[] name = filename.split("=");
-				String finalFileName = name[1].trim().replaceAll("\"", "");
-				return finalFileName;
-			}
-		}
-		return "unknown";
-	}
 
 
-	//save to somewhere
-	private void writeFile(byte[] content, String filename) throws IOException {
-		File file = new File(filename);
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		FileOutputStream fop = new FileOutputStream(file);
-		fop.write(content);
-		fop.flush();
-		fop.close();
-	}
 
 
-	private ArtistServiceLocal lookupArtistServiceLocal() {
-		try {
-			Context c = new InitialContext();
-			return (ArtistServiceLocal) c.lookup(
-					"java:global/PromArtisteJEEBack-ear/PromArtisteJEEBack-ejb/ArtistService!services.ArtistServiceLocal");
-		}catch(NamingException ne) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-			throw new RuntimeException(ne);
-		}
 
-	}
+
 
 
 
