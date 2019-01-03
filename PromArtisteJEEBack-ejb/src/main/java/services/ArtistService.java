@@ -39,6 +39,7 @@ public class ArtistService implements ArtistServiceLocal {
 	private EntityManager em;
 	PathServiceInterface pathService = new PathService();
 
+	
 	/**
 	 * Default constructor. 
 	 */

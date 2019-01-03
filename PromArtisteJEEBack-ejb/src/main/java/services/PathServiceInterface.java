@@ -1,6 +1,8 @@
 package services;
 
+import java.io.IOException;
+
 public interface PathServiceInterface {
 
-	public String getServerLocation();
+	String getServerLocation() ;
 }
