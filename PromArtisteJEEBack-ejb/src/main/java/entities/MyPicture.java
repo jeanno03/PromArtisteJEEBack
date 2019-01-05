@@ -21,6 +21,7 @@ import dto.MySpaceDto;
 			query="select m from MyPicture m where m.registeredDate = :paramRegisteredDate order by m.registeredDate desc" ),
 	@NamedQuery(name="entities.MyPicture.getLastMyPicture",
 	query="select m from MyPicture m order by m.id desc")
+
 })
 public class MyPicture implements Serializable{
 
@@ -99,15 +100,18 @@ public class MyPicture implements Serializable{
 	}
 
 	public MyPictureDto getMyPictureDto() {
-		MyPictureDto myPictureDto = new MyPictureDto(this.id,this.registeredDate);
 		try {
-			MySpaceDto mySpaceDto = new MySpaceDto(this.mySpace.getId(), this.mySpace.getName());
-			myPictureDto.setMySpaceDto(mySpaceDto);
+			MyPictureDto myPictureDto = new MyPictureDto(this.id,this.registeredDate);
+			try {
+				MySpaceDto mySpaceDto = new MySpaceDto(this.mySpace.getId(), this.mySpace.getName());
+				myPictureDto.setMySpaceDto(mySpaceDto);
+			}catch(NullPointerException ex) {
+				ex.printStackTrace();
+			}
+			return myPictureDto;
 		}catch(NullPointerException ex) {
 			ex.printStackTrace();
 		}
-		return myPictureDto;
+		return null;
 	}
-
-
 }

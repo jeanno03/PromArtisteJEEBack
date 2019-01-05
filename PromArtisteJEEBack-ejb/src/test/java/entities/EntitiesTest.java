@@ -21,7 +21,7 @@ class EntitiesTest {
 	MySpace mySpace = new MySpace();
 	MyPicture myPicture= new MyPicture();
 	EntitiesMock entitiesMock = new EntitiesMock();
-	MyUserDto myUserDto = entitiesMock.getMyUserDtoMock();
+
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
 		System.out.println("test start");
@@ -52,11 +52,13 @@ class EntitiesTest {
 
 	@Test
 	void testGetMyUserDto() {
-
+		MyUserDto myUserDto = entitiesMock.getMyUserDtoMock();
 		assertFalse("myUser equals myUserDto",myUser.getMyUserDto() == myUserDto );
 		assertFalse("getMyUserDto est null",myUser.getMyUserDto() == null );
 		assertTrue("getMyUserDto n'est pas null",myUser.getMyUserDto() != null );
 		Throwable exception = assertThrows(NullPointerException.class,()->myUser.getMyUserDto());
+		
+
 	}
 
 

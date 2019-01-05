@@ -77,14 +77,18 @@ public class MyVideo implements Serializable{
 	}
 
 	public MyVideoDto getMyVideoDto() {
-		MyVideoDto myVideoDto = new MyVideoDto(this.id, this.name);
 		try {
-			MySpaceDto mySpaceDto = new MySpaceDto(this.mySpace.getId(), this.mySpace.getName());
-			myVideoDto.setMySpaceDto(mySpaceDto);
+			MyVideoDto myVideoDto = new MyVideoDto(this.id, this.name);
+			try {
+				MySpaceDto mySpaceDto = new MySpaceDto(this.mySpace.getId(), this.mySpace.getName());
+				myVideoDto.setMySpaceDto(mySpaceDto);
+			}catch(NullPointerException ex) {
+				ex.printStackTrace();
+			}
+			return myVideoDto;	
 		}catch(NullPointerException ex) {
 			ex.printStackTrace();
 		}
-		return myVideoDto;	
+		return null;
 	}
-
 }

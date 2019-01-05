@@ -25,5 +25,5 @@ public interface ArtistServiceLocal {
 	public MyPicture getLastMyPictureOfDay();
 	public MyPicture getLastPicture();
 	public String createMyPicturePath(String originName) ;
-	public MyPictureDto saveMyPicture(MyPicture myPicture);
+	public MyPictureDto saveMyPicture(MyPicture myPicture, Long MySpaceId);
 }

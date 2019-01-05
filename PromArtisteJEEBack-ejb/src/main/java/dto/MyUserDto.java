@@ -1,7 +1,7 @@
 package dto;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,7 +20,7 @@ public class MyUserDto {
 	
 	public MyUserDto() {
 		super();
-		mySpacesDto = new ArrayList();
+		mySpacesDto = new HashSet();
 	}
 	
 	public MyUserDto(Long id, String email, String artistName, String firstName, String lastName) {
@@ -63,7 +63,7 @@ public class MyUserDto {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
+
 	public Collection<MySpaceDto> getMySpacesDto() {
 		return mySpacesDto;
 	}

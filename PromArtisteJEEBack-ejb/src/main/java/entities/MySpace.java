@@ -1,8 +1,8 @@
 package entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -30,6 +30,8 @@ import dto.MyVideoDto;
 @NamedQueries({
 	@NamedQuery(name="entities.MySpace.selectAll",
 			query = "select m from MySpace m"),
+	@NamedQuery(name="entities.MySpace.getMySpaceByMyUserId",
+	query="select m from MySpace m where m.myUser.id = :paramUserId")
 })
 @JsonInclude
 //@XmlRootElement(name = "myspace")
@@ -57,8 +59,8 @@ public class MySpace implements Serializable{
 
 	public MySpace() {
 		super();
-		myVideos = new ArrayList();
-		myPictures = new ArrayList();
+		myVideos = new HashSet();
+		myPictures = new HashSet();
 	}
 
 	public MySpace(Long id, String name) {
@@ -118,39 +120,44 @@ public class MySpace implements Serializable{
 	}    
 
 	public MySpaceDto getMySpaceDto() {
-
-		MySpaceDto mySpaceDto = new MySpaceDto(this.id,this.name);
-
-		MyUserDto myUserDto = new MyUserDto(this.myUser.getId(),this.myUser.getEmail(), this.myUser.getArtistName(), this.myUser.getFirstName(), this.myUser.getLastName());
-
-		mySpaceDto.setMyUserDto(myUserDto);
-
 		try {
-			List<MyVideoDto> myVideosDto = new ArrayList();
-			for(MyVideo m : this.myVideos) {
-				MyVideoDto myVideoDto = new MyVideoDto (m.getId(), m.getName());
-				myVideosDto.add(myVideoDto);
-			}
-			mySpaceDto.setMyVideosDto(myVideosDto);
+			MySpaceDto mySpaceDto = new MySpaceDto(this.id,this.name);
 
-		}catch(NullPointerException ex) {
-			ex.printStackTrace();
-		}
+			MyUserDto myUserDto = new MyUserDto(this.myUser.getId(),this.myUser.getEmail(), this.myUser.getArtistName(), this.myUser.getFirstName(), this.myUser.getLastName());
 
-		try {
-			List<MyPictureDto> myPicturesDto = new ArrayList();
-			for(MyPicture m : this.myPictures) {
-				MyPictureDto myPictureDto = new MyPictureDto(m.getId(), m.getRegisteredDate());
-				myPicturesDto.add(myPictureDto);
+			mySpaceDto.setMyUserDto(myUserDto);
+
+			try {
+				HashSet<MyVideoDto> myVideosDto = new HashSet();
+				for(MyVideo m : this.myVideos) {
+					MyVideoDto myVideoDto = new MyVideoDto (m.getId(), m.getName());
+					myVideosDto.add(myVideoDto);
+				}
+				mySpaceDto.setMyVideosDto(myVideosDto);
+
+			}catch(NullPointerException ex) {
+				ex.printStackTrace();
 			}
 
-			mySpaceDto.setMyPicturesDto(myPicturesDto);
+			try {
+				HashSet<MyPictureDto> myPicturesDto = new HashSet();
+				for(MyPicture m : this.myPictures) {
+					MyPictureDto myPictureDto = new MyPictureDto(m.getId(), m.getRegisteredDate());
+					myPicturesDto.add(myPictureDto);
+				}
 
+				mySpaceDto.setMyPicturesDto(myPicturesDto);
+
+			}catch(NullPointerException ex) {
+				ex.printStackTrace();
+			}
+			return mySpaceDto;
+			
 		}catch(NullPointerException ex) {
 			ex.printStackTrace();
+
 		}
-		return mySpaceDto;
+		return null;
 	}
-
 
 }

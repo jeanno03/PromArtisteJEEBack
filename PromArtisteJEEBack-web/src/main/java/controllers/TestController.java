@@ -20,6 +20,7 @@ import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -49,13 +50,10 @@ import services.PathServiceInterface;
 @Path("/TestController")
 public class TestController {
 
-	EjbServiceInterface ejbService = new EjbService();
-	FrontServiceInterface frontService = new FrontService ();
-	ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
-	FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
-	PathServiceInterface pathService = new PathService();
-
-	//	
+	private EjbServiceInterface ejbService = new EjbService();
+	private FrontServiceInterface frontService = new FrontService ();
+	private ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
+	private FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
 
 	public TestController() {
 		super();
@@ -166,11 +164,12 @@ public class TestController {
 	}
 
 	//	https://www.mkyong.com/webservices/jax-rs/file-upload-example-in-resteasy/
-	@POST
-	@Path("/upload")
+	@PUT
+	@Path("/upload/{id}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/upload/
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/upload/1
 	public Response uploadFile(
+			@PathParam("id") Long mySpaceId,
 			MultipartFormDataInput input
 			) throws IOException, InterruptedException { 
 
@@ -215,7 +214,7 @@ public class TestController {
 				System.out.println("day : " + day);
 				System.out.println("path : " + path);
 				System.out.println("originName : " + originName);
-				MyPictureDto myPictureDto = artistServiceLocal.saveMyPicture(myPicture);
+				MyPictureDto myPictureDto = artistServiceLocal.saveMyPicture(myPicture, mySpaceId);
 				System.out.println("myPictureDto.getId() : " + myPictureDto.getId());
 				System.out.println("Done");
 			} catch (IOException e) {

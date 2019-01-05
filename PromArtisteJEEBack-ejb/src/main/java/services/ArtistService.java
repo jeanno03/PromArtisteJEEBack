@@ -37,7 +37,8 @@ public class ArtistService implements ArtistServiceLocal {
 
 	@PersistenceContext(unitName = "primaryPromArtist")
 	private EntityManager em;
-	PathServiceInterface pathService = new PathService();
+	
+	private PathServiceInterface pathService = new PathService();
 
 	
 	/**
@@ -71,7 +72,9 @@ public class ArtistService implements ArtistServiceLocal {
 			Date day = new Date();
 			MyPicture myPicture01 = new MyPicture(day, pathService.getServerLocation()+"001.pdf", "fichier 01.pdf");
 			MyPicture myPicture02 = new MyPicture(day, pathService.getServerLocation()+"002.pdf", "fichier 02.pdf");
-
+			MyPicture myPicture03 = new MyPicture(day, pathService.getServerLocation()+"003.pdf", "fichier 02.pdf");
+			MyPicture myPicture04 = new MyPicture(day, pathService.getServerLocation()+"004.pdf", "fichier 02.pdf");
+			
 			my01.setMyUser(myUser01);
 			my02.setMyUser(myUser01);
 
@@ -88,7 +91,9 @@ public class ArtistService implements ArtistServiceLocal {
 			mv08.setMySpace(my04);
 
 			myPicture01.setMySpace(my01);
-			myPicture02.setMySpace(my02);
+			myPicture02.setMySpace(my01);
+			myPicture03.setMySpace(my02);
+			myPicture04.setMySpace(my02);
 
 			em.persist(myUser01);
 			em.persist(myUser02);
@@ -195,7 +200,6 @@ public class ArtistService implements ArtistServiceLocal {
 			System.out.println("exception : " + ex);
 		}
 
-
 		return null;
 	}
 
@@ -215,7 +219,8 @@ public class ArtistService implements ArtistServiceLocal {
 			ex.printStackTrace();
 		}
 	}
-
+	
+	@Override
 	public MyUserDto getMyUserDtoByEmail(String email) {
 		TypedQuery<MyUser> qr = em.createNamedQuery("entities.MyUser.getByEmail",MyUser.class);
 		qr.setParameter("paramEmail", email);
@@ -230,26 +235,16 @@ public class ArtistService implements ArtistServiceLocal {
 		return null;
 	}
 
+	@Override
 	public void upLoadPicture(Long myUserId, Long mySpaceId) throws InterruptedException {
 		MyUser myUser = getMyUserById(myUserId);
 		MySpace mySpace = getMySpaceById(mySpaceId);
-
 		System.out.println("mySpace.getName() : " + mySpace.getName());
-
-		Date day = new Date(); 
-
-		System.out.println("day : " + day);
-		//		MyPicture my = new MyPicture(day);
-		//		my.setMySpace(mySpace);
-		//		em.persist(my);
 		Thread.sleep(1000);
-		//		MyPicture myPictureReturn = GetLastMyPictureOfDay();
-		//		MyPictureDto myPictureDto = myPictureReturn.getMyPictureDto();
-
-		//		System.out.println("myPictureDto.getId() : " + myPictureDto.getId());
-		//		return myPictureDto;
+		System.out.println("Done !");
 	}
 
+	@Override
 	public MyPicture getLastMyPictureOfDay() {
 		Date day = new Date();
 		TypedQuery<MyPicture> qr = em.createNamedQuery("entities.MyPicture.getLastMyPictureOfDay",MyPicture.class);
@@ -263,6 +258,7 @@ public class ArtistService implements ArtistServiceLocal {
 		return null;
 	}
 
+	@Override
 	public MyPicture getLastPicture() {
 		TypedQuery<MyPicture> qr = em.createNamedQuery("entities.MyPicture.getLastMyPicture",MyPicture.class);
 		qr.setMaxResults(1);
@@ -275,6 +271,7 @@ public class ArtistService implements ArtistServiceLocal {
 		return null;
 	}
 
+	@Override
 	public String createMyPicturePath(String originName) {
 		//				path = pathService.getServerLocation() + newId + extension;
 		MyPicture myPicture = getLastPicture();
@@ -290,8 +287,11 @@ public class ArtistService implements ArtistServiceLocal {
 		return path;
 	}
 
-	public MyPictureDto saveMyPicture(MyPicture myPicture) {
+	public MyPictureDto saveMyPicture(MyPicture myPicture, Long mySpaceId) {
+		MySpace mySpace= em.find(MySpace.class, mySpaceId);
+		myPicture.setMySpace(mySpace);
 		em.persist(myPicture);
+		
 		MyPictureDto myPictureDto = myPicture.getMyPictureDto();
 		return myPictureDto;
 	}

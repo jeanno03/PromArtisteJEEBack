@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import controllers.FileController;
 import controllers.TestController;
 import services.ArtistService;
 
@@ -19,6 +20,7 @@ public class MyRestApplication extends Application{
    	
         Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(TestController.class);
+        classes.add(FileController.class);
         return classes;
     }
 

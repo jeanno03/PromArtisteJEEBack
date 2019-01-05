@@ -1,8 +1,8 @@
 package entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -61,7 +61,7 @@ public class MyUser implements Serializable{
 
 	public MyUser() {
 		super();
-		mySpaces = new ArrayList();
+		mySpaces = new HashSet();
 	}
 
 	public MyUser(String email, String artistName, String firstName, String lastName) {
@@ -120,34 +120,39 @@ public class MyUser implements Serializable{
 	}
 
 	public MyUserDto getMyUserDto() {
-		MyUserDto myUserDto = new MyUserDto(this.id,this.email,this.artistName,this.firstName,this.lastName);
 		try {
-			List<MySpaceDto> mySpacesDto = new ArrayList();
+			MyUserDto myUserDto = new MyUserDto(this.id,this.email,this.artistName,this.firstName,this.lastName);
+			try {
+				HashSet<MySpaceDto> mySpacesDto = new HashSet();
 
-			for(MySpace m : this.mySpaces) {
+				for(MySpace m : this.mySpaces) {
 
-				MySpaceDto mySpaceDto = new MySpaceDto (m.getId(), m.getName());
+					MySpaceDto mySpaceDto = new MySpaceDto (m.getId(), m.getName());
 
-				try {
-					List<MyVideoDto> myVideosDto = new ArrayList();
-					for(MyVideo m2 : m.getMyVideos()) {
+					try {
+						HashSet<MyVideoDto> myVideosDto = new HashSet();
+						for(MyVideo m2 : m.getMyVideos()) {
 
-						MyVideoDto myVideoDto = new MyVideoDto (m2.getId(), m2.getName());
-						myVideosDto.add(myVideoDto);
+							MyVideoDto myVideoDto = new MyVideoDto (m2.getId(), m2.getName());
+							myVideosDto.add(myVideoDto);
+						}
+
+						mySpaceDto.setMyVideosDto(myVideosDto);
+					}catch(NullPointerException ex) {
+						ex.printStackTrace();
 					}
+					mySpacesDto.add(mySpaceDto);
+					myUserDto.setMySpacesDto(mySpacesDto);
 
-					mySpaceDto.setMyVideosDto(myVideosDto);
-				}catch(NullPointerException ex) {
-					ex.printStackTrace();
 				}
-				mySpacesDto.add(mySpaceDto);
-				myUserDto.setMySpacesDto(mySpacesDto);
-
+			}catch(NullPointerException ex) {
+				ex.printStackTrace();
 			}
+			return myUserDto;		
 		}catch(NullPointerException ex) {
 			ex.printStackTrace();
 		}
-		return myUserDto;		
+		return null;
 	}
 
 }

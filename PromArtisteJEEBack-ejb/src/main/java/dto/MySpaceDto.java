@@ -1,7 +1,7 @@
 package dto;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import entities.MyPicture;
 
@@ -15,8 +15,8 @@ public class MySpaceDto {
     
 	public MySpaceDto() {
 		super();
-		myVideosDto = new ArrayList();
-		myPicturesDto = new ArrayList();
+		myVideosDto = new HashSet();
+		myPicturesDto = new HashSet();
 	}
 
 	public MySpaceDto(Long id, String name) {
@@ -48,6 +48,8 @@ public class MySpaceDto {
 	public void setMyUserDto(MyUserDto myUserDto) {
 		this.myUserDto = myUserDto;
 	}
+
+
 
 	public Collection<MyVideoDto> getMyVideosDto() {
 		return myVideosDto;
