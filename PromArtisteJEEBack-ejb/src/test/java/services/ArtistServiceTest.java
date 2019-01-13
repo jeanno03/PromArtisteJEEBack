@@ -17,10 +17,12 @@ import org.junit.Test;
 import dto.MyUserDto;
 import entities.MySpace;
 import entities.MyUser;
+import mocks.EntitiesMock;
 
 public class ArtistServiceTest {
 
 	ArtistServiceLocal artistService = new ArtistService ();
+	EntitiesMock entitiesMock = new EntitiesMock();
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -89,7 +91,25 @@ public class ArtistServiceTest {
 		String email = "test";
 		Throwable exception = assertThrows(NullPointerException.class,() -> artistService.getMyUserDtoByEmail(email));
 	}
-
+	
+	@Test
+	public void testGetStringSha3() throws Exception {
+		String mdp = "toto1234";
+		String mdpReturn = artistService.getStringSha3(mdp);
+		System.out.println(" mdpReturn : " + mdpReturn);
+		assertTrue("mdp and mdpReturn are not equals", !mdp.equals(mdpReturn));
+	}
+	
+	@Test
+	public void  testDetConnect()throws Exception {
+		String email ="jean@gmail.com";
+		String mdp = "1234";
+		String mdpSha3 = artistService.getStringSha3(mdp);
+		MyUser myUser = entitiesMock.getMyUser();
+		assertTrue("email are equals", email.equals(myUser.getEmail()));
+		assertTrue("mdpSha3 are equals", mdpSha3.equals(myUser.getMdp()));
+	}
+	
 	@Test
 	public void testUpLoadPicture() {
 		fail("Not yet implemented");

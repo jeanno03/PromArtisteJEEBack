@@ -5,8 +5,12 @@ import java.util.List;
 
 import dto.MyUserDto;
 import entities.MyUser;
+import services.ArtistService;
+import services.ArtistServiceLocal;
 
 public class EntitiesMock {
+	
+	ArtistServiceLocal artistService = new ArtistService ();
 	
 	public List<MyUserDto> getMyUsersDtoMock(){
 		List<MyUserDto> myUsersDtoMock = Arrays.asList(
@@ -19,6 +23,15 @@ public class EntitiesMock {
 	
 	public MyUserDto getMyUserDtoMock() {
 		return new MyUserDto(4L,"email4","artistName4","firstName4","lastName4");
+	}
+	
+	public MyUser getMyUser() throws Exception {
+		MyUser myUser = new MyUser("jean@gmail.com","le tonerre", "Jean", "Aimar");
+		String mdp = "1234";
+		String mdpSha3 = artistService.getStringSha3(mdp);
+		myUser.setMdp(mdpSha3);
+		return myUser;
+		
 	}
 
 }

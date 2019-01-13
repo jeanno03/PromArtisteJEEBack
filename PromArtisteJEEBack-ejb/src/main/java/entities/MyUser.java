@@ -51,6 +51,7 @@ public class MyUser implements Serializable{
 	private Long id;
 
 	private String email;
+	private String mdp;
 	private String artistName;
 	private String firstName;
 	private String lastName;
@@ -72,6 +73,17 @@ public class MyUser implements Serializable{
 		this.lastName = lastName;
 	}
 
+	
+	
+	public MyUser(String email, String artistName, String firstName, String lastName, String mdp) {
+		this();
+		this.email = email;
+		this.artistName = artistName;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.mdp = mdp;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -86,6 +98,15 @@ public class MyUser implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public String getMdp() {
+		return mdp;
+	}
+
+	public void setMdp(String mdp) {
+		this.mdp = mdp;
+	}
+
 	public String getArtistName() {
 		return artistName;
 	}

@@ -12,11 +12,13 @@ public class MySpaceDto {
     private MyUserDto myUserDto;
     private Collection <MyVideoDto> myVideosDto;   
     private Collection <MyPictureDto> myPicturesDto;
+    private Collection <MySoundDto> mySoundsDto;
     
 	public MySpaceDto() {
 		super();
 		myVideosDto = new HashSet();
 		myPicturesDto = new HashSet();
+		mySoundsDto = new HashSet();
 	}
 
 	public MySpaceDto(Long id, String name) {
@@ -65,6 +67,14 @@ public class MySpaceDto {
 
 	public void setMyPicturesDto(Collection<MyPictureDto> myPicturesDto) {
 		this.myPicturesDto = myPicturesDto;
+	}
+	
+	public Collection<MySoundDto> getMySoundsDto() {
+		return mySoundsDto;
+	}
+
+	public void setMySoundsDto(Collection<MySoundDto> mySoundsDto) {
+		this.mySoundsDto = mySoundsDto;
 	}
 
 	@Override

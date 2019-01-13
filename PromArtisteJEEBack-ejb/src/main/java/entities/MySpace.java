@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import dto.MyPictureDto;
+import dto.MySoundDto;
 import dto.MySpaceDto;
 import dto.MyUserDto;
 import dto.MyVideoDto;
@@ -56,11 +57,15 @@ public class MySpace implements Serializable{
 
 	@OneToMany(mappedBy="mySpace", cascade= {CascadeType.ALL})  
 	private Collection<MyPicture> myPictures;
+	
+	@OneToMany(mappedBy="mySpace", cascade= {CascadeType.ALL})
+	private Collection<MySound> mySounds;
 
 	public MySpace() {
 		super();
 		myVideos = new HashSet();
 		myPictures = new HashSet();
+		mySounds = new HashSet();
 	}
 
 	public MySpace(Long id, String name) {
@@ -114,6 +119,14 @@ public class MySpace implements Serializable{
 		this.myPictures = myPictures;
 	}
 
+	public Collection<MySound> getMySounds() {
+		return mySounds;
+	}
+
+	public void setMySounds(Collection<MySound> mySounds) {
+		this.mySounds = mySounds;
+	}
+
 	@Override
 	public String toString() {
 		return "MySpace [id=" + id + ", name=" + name + "]";
@@ -151,6 +164,19 @@ public class MySpace implements Serializable{
 			}catch(NullPointerException ex) {
 				ex.printStackTrace();
 			}
+			
+			try {
+				HashSet<MySoundDto> mySoundsDto = new HashSet();
+				for(MySound m : this.mySounds) {
+					MySoundDto mySoundDto = new MySoundDto (m.getId(),m.getName());
+					mySoundsDto.add(mySoundDto);
+				}
+				mySpaceDto.setMySoundsDto(mySoundsDto);
+			}catch(NullPointerException ex) {
+				ex.printStackTrace();
+			}
+			
+			
 			return mySpaceDto;
 			
 		}catch(NullPointerException ex) {

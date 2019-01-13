@@ -15,6 +15,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.bouncycastle.jcajce.provider.digest.SHA3;
+import org.bouncycastle.util.encoders.Hex;
+
 import dto.MyPictureDto;
 import dto.MySpaceDto;
 import dto.MyUserDto;
@@ -94,7 +97,11 @@ public class ArtistService implements ArtistServiceLocal {
 			myPicture02.setMySpace(my01);
 			myPicture03.setMySpace(my02);
 			myPicture04.setMySpace(my02);
-
+			
+			String mdpSha3 = getStringSha3("1234");
+			myUser01.setMdp(mdpSha3);
+			myUser02.setMdp(mdpSha3);
+			
 			em.persist(myUser01);
 			em.persist(myUser02);
 
@@ -294,6 +301,31 @@ public class ArtistService implements ArtistServiceLocal {
 		
 		MyPictureDto myPictureDto = myPicture.getMyPictureDto();
 		return myPictureDto;
+	}
+	
+	public String getStringSha3(String mdp) throws Exception { 
+	    String input = "Hello world !"; 
+	    SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest512(); 
+	    byte[] digest = digestSHA3.digest(input.getBytes()); 
+
+//	    System.out.println("SHA3-512 = " + Hex.toHexString(digest));
+	    return Hex.toHexString(digest);
+	} 
+	
+	public MyUserDto getConnect(String email, String mdp) throws Exception {
+		String mdpSha3 = getStringSha3(mdp);
+		TypedQuery<MyUser> qr = em.createNamedQuery("entities.MyUser.getByEmail",MyUser.class);
+		qr.setParameter("paramEmail", email);
+		try {
+			MyUser myUser = (MyUser) qr.getSingleResult();
+		if(mdpSha3.equals(myUser.getMdp())) {
+			MyUserDto myUserDto = myUser.getMyUserDto();
+			return myUserDto;
+		}
+		}catch(NullPointerException ex) {
+			ex.printStackTrace();
+		}
+		return null;
 	}
 
 }

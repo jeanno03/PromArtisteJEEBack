@@ -207,7 +207,7 @@ public class TestController {
 				path = artistServiceLocal.createMyPicturePath(originName);
 
 				frontService.writeFile(bytes,path);
-				//délai pour écriture sur rerveur
+				//délai pour écriture sur serveur
 				Thread.sleep(2000);
 
 				MyPicture myPicture = new MyPicture(day, path, originName);
@@ -227,12 +227,27 @@ public class TestController {
 
 
 
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/toConnect/")
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/toConnectPost/
+	public MyUserDto toConnectPost(MyUser myUser) throws Exception{
+		MyUserDto myUserDto = artistServiceLocal.getConnect(myUser.getEmail(), myUser.getMdp());
+		return myUserDto;
+	}
 
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/toConnectGet/{email}/{mdp}")
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/toConnectGet/jean.jean@gmail.com/1234/
+	public MyUserDto toConnectGet(
+			@PathParam("email") String email, 
+			@PathParam("mdp") String mdp) throws Exception {
+		MyUserDto myUserDto = artistServiceLocal.getConnect(email, mdp);
+		return myUserDto;
 
-
-
-
+	}
 
 
 }

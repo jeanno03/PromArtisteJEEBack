@@ -26,4 +26,6 @@ public interface ArtistServiceLocal {
 	public MyPicture getLastPicture();
 	public String createMyPicturePath(String originName) ;
 	public MyPictureDto saveMyPicture(MyPicture myPicture, Long MySpaceId);
+	public String getStringSha3(String mdp) throws Exception;
+	public MyUserDto getConnect(String email, String mdp) throws Exception;
 }
