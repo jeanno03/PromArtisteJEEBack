@@ -57,7 +57,9 @@ public class ArtistService implements ArtistServiceLocal {
 		try {
 			MyUser myUser01 = new MyUser ("jean.jean@gmail.com", "Elvis King", "jean", "jean");
 			MyUser myUser02 = new MyUser ("george.jean@gmail.com", "Yvan King", "george", "Yvan");
-
+			
+			MyUser myUser03 = new MyUser ("phou.jeannory@gmail.com", "jeannory", "jeannory", "jeannory");
+			
 			MySpace my01 = new MySpace("Espace du Mort");
 			MySpace my02 = new MySpace("Espace Rap");
 			MySpace my03 = new MySpace("Espace du King");
@@ -83,6 +85,9 @@ public class ArtistService implements ArtistServiceLocal {
 
 			my03.setMyUser(myUser02);
 			my04.setMyUser(myUser02);
+			
+			my03.setMyUser(myUser03);
+			my04.setMyUser(myUser03);
 
 			mv01.setMySpace(my01);
 			mv02.setMySpace(my01);
@@ -98,13 +103,14 @@ public class ArtistService implements ArtistServiceLocal {
 			myPicture03.setMySpace(my02);
 			myPicture04.setMySpace(my02);
 			
-			String mdpSha3 = getStringSha3("1234");
-			myUser01.setMdp(mdpSha3);
-			myUser02.setMdp(mdpSha3);
-			
+			String mdpSha31 = getStringSha3("1234");
+			String mdpSha32 = getStringSha3("12345678");
+			myUser01.setMdp(mdpSha31);
+			myUser02.setMdp(mdpSha31);
+			myUser03.setMdp(mdpSha32);
 			em.persist(myUser01);
 			em.persist(myUser02);
-
+			em.persist(myUser03);
 			em.persist(my01);
 			em.persist(my02);
 			em.persist(my03);
@@ -302,14 +308,15 @@ public class ArtistService implements ArtistServiceLocal {
 		MyPictureDto myPictureDto = myPicture.getMyPictureDto();
 		return myPictureDto;
 	}
-	
+		
 	public String getStringSha3(String mdp) throws Exception { 
-	    String input = "Hello world !"; 
+//	    String input = "Hello world !"; 
 	    SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest512(); 
-	    byte[] digest = digestSHA3.digest(input.getBytes()); 
+	    byte[] digest = digestSHA3.digest(mdp.getBytes()); 
 
 //	    System.out.println("SHA3-512 = " + Hex.toHexString(digest));
 	    return Hex.toHexString(digest);
+//	    return digest.toString();
 	} 
 	
 	public MyUserDto getConnect(String email, String mdp) throws Exception {
@@ -318,9 +325,15 @@ public class ArtistService implements ArtistServiceLocal {
 		qr.setParameter("paramEmail", email);
 		try {
 			MyUser myUser = (MyUser) qr.getSingleResult();
+			System.out.println("mdpSha3 : " + mdpSha3);
+			System.out.println("myUser.getMdp() : " + myUser.getMdp());
 		if(mdpSha3.equals(myUser.getMdp())) {
 			MyUserDto myUserDto = myUser.getMyUserDto();
 			return myUserDto;
+		}
+		else {
+			System.out.println("le mdp ne correspond pas");
+			return null;
 		}
 		}catch(NullPointerException ex) {
 			ex.printStackTrace();

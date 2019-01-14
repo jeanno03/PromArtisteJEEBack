@@ -96,12 +96,20 @@ public class ArtistServiceTest {
 	public void testGetStringSha3() throws Exception {
 		String mdp = "toto1234";
 		String mdpReturn = artistService.getStringSha3(mdp);
+		String mdp2 = "99999";
+		String mdpReturn2 = artistService.getStringSha3(mdp2);
 		System.out.println(" mdpReturn : " + mdpReturn);
 		assertTrue("mdp and mdpReturn are not equals", !mdp.equals(mdpReturn));
+		
+		
+		System.out.println(" mdpReturn : " + mdpReturn);
+		System.out.println(" mdpReturn2 : " + mdpReturn2);
 	}
 	
+	
+	
 	@Test
-	public void  testDetConnect()throws Exception {
+	public void  testGetConnect()throws Exception {
 		String email ="jean@gmail.com";
 		String mdp = "1234";
 		String mdpSha3 = artistService.getStringSha3(mdp);
@@ -114,5 +122,7 @@ public class ArtistServiceTest {
 	public void testUpLoadPicture() {
 		fail("Not yet implemented");
 	}
+	
+
 
 }
