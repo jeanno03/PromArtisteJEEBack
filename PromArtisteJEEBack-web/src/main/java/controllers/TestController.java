@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -18,26 +19,35 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+
+import tools.AuthenticationFilter;
+import tools.ResponseBuilder;
+
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
 import dto.MyPictureDto;
 import dto.MyUserDto;
 import dto.MyVideoDto;
+import entities.Credentials;
 import entities.MyPicture;
 import entities.MySpace;
 import entities.MyUser;
+import myconstants.MyConstant;
 import services.ArtistServiceLocal;
 import services.EjbService;
 import services.EjbServiceInterface;
@@ -46,6 +56,8 @@ import services.FrontService;
 import services.FrontServiceInterface;
 import services.PathService;
 import services.PathServiceInterface;
+import services.SecurityServiceLocal;
+
 
 @Path("/TestController")
 public class TestController {
@@ -54,6 +66,7 @@ public class TestController {
 	private FrontServiceInterface frontService = new FrontService ();
 	private ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
 	private FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
+	private SecurityServiceLocal securityServiceLocal = ejbService.lookupSecurityServiceLocal();
 
 	public TestController() {
 		super();
@@ -67,9 +80,26 @@ public class TestController {
 		MyPicture mypicture = artistServiceLocal.getLastPicture();
 		String lastId = String.valueOf(mypicture.getId());
 		System.out.println("lastId : " + lastId);
+		MyConstant.LOGGER.info("test here ");
 		return "Hello World";
 	}
-
+	
+	@GET
+	@Path("/testString")
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/testString
+	public String testString(){
+		return "string";
+	}	
+	
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/withheaders/ENSMA
+	  @GET
+	    @Path("/withheaders/{id}")
+	    public Response getHelloWithHeaders(@PathParam("id") String id,
+	                                        @DefaultValue("votre serviteur") @HeaderParam("name") String name) {
+	        return Response.ok().header("name", name).entity("Bonjour " + id + " de la part de (voir l'en-tête).").build();
+	    }
+	  
+	  
 	@GET
 	@Path("/testMyUsers")
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/testMyUsers
@@ -235,8 +265,27 @@ public class TestController {
 		MyUserDto myUserDto = artistServiceLocal.getConnect(myUser.getEmail(), myUser.getMdp());
 		return myUserDto;
 	}
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/toConnectJwt/")
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/toConnectJwt/
+	//body email:jean.jean@gmail.com et mdp:1234
+	public Response toConnectJwt(MyUser myUser)throws Exception{
+		if (artistServiceLocal.getConnectBoolean(myUser.getEmail(),myUser.getMdp())) {
+			// generate a token for the user
+			String token = securityServiceLocal.generateJwtToken(myUser.getId());
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, token );
+			
+			// Return the token on the response
+			return ResponseBuilder.createResponse( Response.Status.OK, map );
+		}
+		return null;
+	}
 
-
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/toConnectGet/{email}/{mdp}")

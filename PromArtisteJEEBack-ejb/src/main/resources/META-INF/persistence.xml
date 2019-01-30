@@ -26,8 +26,11 @@
       <!-- The datasource is deployed as <EAR>/META-INF/PromArtisteJEEBack-ds.xml, you
          can find it in the source at ear/src/main/application/META-INF/PromArtisteJEEBack-ds.xml -->
       <jta-data-source>java:/PostgresXADS</jta-data-source>
-      <class>entities.MyUser</class>
+      <class>entities.MyPicture</class>
+      <class>entities.MySound</class>
       <class>entities.MySpace</class>
+      <class>entities.MyUser</class>
+      <class>entities.MyVideo</class>
       <properties>
          <!-- Properties for Hibernate -->
          <property name="hibernate.hbm2ddl.auto" value="create-drop" />

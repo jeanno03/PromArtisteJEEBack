@@ -14,6 +14,7 @@ import javax.naming.NoInitialContextException;
  */
 public class EjbService implements EjbServiceInterface{
 
+	@Override
 	public ArtistServiceLocal lookupArtistServiceLocal(){
 		try {
 			Context c = new InitialContext();
@@ -26,6 +27,7 @@ public class EjbService implements EjbServiceInterface{
 
 	}
 
+	@Override
 	public FileServiceLocal lookupFileServiceLocal(){
 		try {
 			Context c = new InitialContext();
@@ -37,5 +39,31 @@ public class EjbService implements EjbServiceInterface{
 		}
 
 	}
+	
+	@Override
+	public SecurityServiceLocal lookupSecurityServiceLocal(){
+		try {
+			Context c = new InitialContext();
+			return (SecurityServiceLocal) c.lookup(					
+					"java:global/PromArtisteJEEBack-ear/PromArtisteJEEBack-ejb/SecurityService!services.SecurityServiceLocal");
+		}catch(NamingException ne) {
+			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+			throw new RuntimeException(ne);
+		}
+
+	}
+
+//	@Override
+//	public LazySingletonLocal lookupLazySingletonLocal(){
+//		try {
+//			Context c = new InitialContext();
+//			return (LazySingletonLocal) c.lookup(
+//					"java:global/PromArtisteJEEBack-ear/PromArtisteJEEBack-ejb/FileService!services.LazySingletonLocal");
+//		}catch(NamingException ne) {
+//			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+//			throw new RuntimeException(ne);
+//		}
+//
+//	}
 
 }

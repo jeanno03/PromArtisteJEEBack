@@ -9,14 +9,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 import org.bouncycastle.util.encoders.Hex;
+import org.glassfish.jersey.server.model.internal.ModelProcessorUtil.Method;
 
 import dto.MyPictureDto;
 import dto.MySpaceDto;
@@ -30,6 +37,7 @@ import entities.MyPicture;
 import entities.MySpace;
 import entities.MyUser;
 import entities.MyVideo;
+import myconstants.MyConstant;
 
 /**
  * Session Bean implementation class ArtistService
@@ -75,10 +83,10 @@ public class ArtistService implements ArtistServiceLocal {
 			MyVideo mv08 = new MyVideo("Wakaka");
 
 			Date day = new Date();
-			MyPicture myPicture01 = new MyPicture(day, pathService.getServerLocation()+"001.pdf", "fichier 01.pdf");
-			MyPicture myPicture02 = new MyPicture(day, pathService.getServerLocation()+"002.pdf", "fichier 02.pdf");
-			MyPicture myPicture03 = new MyPicture(day, pathService.getServerLocation()+"003.pdf", "fichier 02.pdf");
-			MyPicture myPicture04 = new MyPicture(day, pathService.getServerLocation()+"004.pdf", "fichier 02.pdf");
+			MyPicture myPicture01 = new MyPicture(day, MyConstant.PROP.getProperty("server-location")+"001.pdf", "fichier 01.pdf");
+			MyPicture myPicture02 = new MyPicture(day, MyConstant.PROP.getProperty("server-location")+"002.pdf", "fichier 02.pdf");
+			MyPicture myPicture03 = new MyPicture(day, MyConstant.PROP.getProperty("server-location")+"003.pdf", "fichier 02.pdf");
+			MyPicture myPicture04 = new MyPicture(day, MyConstant.PROP.getProperty("server-location")+"004.pdf", "fichier 02.pdf");
 			
 			my01.setMyUser(myUser01);
 			my02.setMyUser(myUser01);
@@ -183,7 +191,8 @@ public class ArtistService implements ArtistServiceLocal {
 		return null;
 	}
 
-	private MyUser getMyUserById(Long id) {
+	@Override
+	public MyUser getMyUserById(Long id) {
 		return em.getReference(MyUser.class, id);
 	}
 
@@ -296,7 +305,7 @@ public class ArtistService implements ArtistServiceLocal {
 
 		String extension = fileTab[t-4]+fileTab[t-3]+fileTab[t-2]+fileTab[t-1];
 
-		String path = pathService.getServerLocation()+newId +extension ;
+		String path = MyConstant.PROP.getProperty("server-location")+newId +extension ;
 		return path;
 	}
 
@@ -340,5 +349,31 @@ public class ArtistService implements ArtistServiceLocal {
 		}
 		return null;
 	}
+	@Override
+	public Boolean getConnectBoolean(String email, String mdp) throws Exception {
+		String mdpSha3 = getStringSha3(mdp);
+		TypedQuery<MyUser> qr = em.createNamedQuery("entities.MyUser.getByEmail",MyUser.class);
+		qr.setParameter("paramEmail", email);
+		try {
+			MyUser myUser = (MyUser) qr.getSingleResult();
+			System.out.println("mdpSha3 : " + mdpSha3);
+			System.out.println("myUser.getMdp() : " + myUser.getMdp());
+		if(mdpSha3.equals(myUser.getMdp())) {
+//			MyUserDto myUserDto = myUser.getMyUserDto();
+//			return myUserDto;
+			return true;
+		}
+		else {
+			System.out.println("le mdp ne correspond pas");
+			return false;
+		}
+		}catch(NullPointerException ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+	
+	
+	
 
 }

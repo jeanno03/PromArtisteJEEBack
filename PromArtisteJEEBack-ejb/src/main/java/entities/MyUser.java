@@ -1,5 +1,6 @@
 package entities;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,6 +23,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 import dto.MySpaceDto;
 import dto.MyUserDto;
@@ -39,6 +44,9 @@ import dto.MyVideoDto;
 @Table(name="myuser",
 uniqueConstraints = {@UniqueConstraint(columnNames={"email", "artistName"})}
 		)
+
+//A tester
+//public class MyUser implements  JsonSerializable
 public class MyUser implements Serializable{
 
 	/**
@@ -73,8 +81,8 @@ public class MyUser implements Serializable{
 		this.lastName = lastName;
 	}
 
-	
-	
+
+
 	public MyUser(String email, String artistName, String firstName, String lastName, String mdp) {
 		this();
 		this.email = email;
@@ -175,5 +183,18 @@ public class MyUser implements Serializable{
 		}
 		return null;
 	}
+
+//	@Override
+//	public void serialize(JsonGenerator gen, SerializerProvider serializers) throws IOException {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void serializeWithType(JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
+//			throws IOException {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 }

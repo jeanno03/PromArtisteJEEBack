@@ -28,4 +28,6 @@ public interface ArtistServiceLocal {
 	public MyPictureDto saveMyPicture(MyPicture myPicture, Long MySpaceId);
 	public String getStringSha3(String mdp) throws Exception;
 	public MyUserDto getConnect(String email, String mdp) throws Exception;
+	public Boolean getConnectBoolean(String email, String mdp) throws Exception;
+	public MyUser getMyUserById(Long id);
 }
