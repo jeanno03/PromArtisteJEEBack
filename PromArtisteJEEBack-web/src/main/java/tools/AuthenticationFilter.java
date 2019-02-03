@@ -1,4 +1,4 @@
-package services;
+package tools;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,10 +23,13 @@ import org.apache.log4j.Logger;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 
 import entities.MyUser;
-import entities.tools.MyUserSecurity;
 import myconstants.MyConstant;
 import services.ArtistServiceLocal;
+import services.EjbService;
+import services.EjbServiceInterface;
 import services.FileServiceLocal;
+import services.FrontService;
+import services.FrontServiceInterface;
 import services.SecurityServiceLocal;
 
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -42,7 +45,6 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 @Priority( Priorities.AUTHENTICATION )
 public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequestFilter
 {
-	final static Logger logger = Logger.getLogger( AuthenticationFilter.class );
 	
 	private EjbServiceInterface ejbService = new EjbService();
 	private FrontServiceInterface frontService = new FrontService ();
@@ -85,7 +87,7 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
             // block access if no authorization information is provided
             if( authProperty == null || authProperty.isEmpty() )
             {
-            	logger.warn("No token provided!");
+            	MyConstant.LOGGER.info("No token provided!");
                 requestContext.abortWith( 
                     	ResponseBuilder.createResponse( Response.Status.UNAUTHORIZED, ACCESS_DENIED )
                 );
@@ -122,16 +124,16 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
             	return;
             }
             
-            MyUserSecurity userSecurity = new MyUserSecurity ("fake", "fake", "fake");
-            
-            // token does not match with token stored in database - enforce re authentication
-            if( !userSecurity.getToken().equals( jwt ) ) {
-            	logger.warn("Token expired!");
-                requestContext.abortWith( 
-                    	ResponseBuilder.createResponse( Response.Status.UNAUTHORIZED, ACCESS_REFRESH )
-                );
-                return;
-            }
+//            MyUserSecurity userSecurity = new MyUserSecurity ("fake", "fake", "fake");
+//            
+//            // token does not match with token stored in database - enforce re authentication
+//            if( !userSecurity.getToken().equals( jwt ) ) {
+//            	logger.warn("Token expired!");
+//                requestContext.abortWith( 
+//                    	ResponseBuilder.createResponse( Response.Status.UNAUTHORIZED, ACCESS_REFRESH )
+//                );
+//                return;
+//            }
             
             // verify user access from provided roles ("admin", "user", "guest")
             if( method.isAnnotationPresent( RolesAllowed.class ) )
@@ -141,14 +143,14 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
                 Set<String> rolesSet = new HashSet<String>( Arrays.asList( rolesAnnotation.value() ) );
                   
                 // user valid?
-                if( !isUserAllowed( userSecurity.getRole(), rolesSet ) )
-                {
-                	logger.warn("User does not have the rights to acces this resource!");
-                    requestContext.abortWith( 
-                        	ResponseBuilder.createResponse( Response.Status.UNAUTHORIZED, ACCESS_DENIED )
-                    );
-                    return;
-                }
+//                if( !isUserAllowed( userSecurity.getRole(), rolesSet ) )
+//                {
+//                	logger.warn("User does not have the rights to acces this resource!");
+//                    requestContext.abortWith( 
+//                        	ResponseBuilder.createResponse( Response.Status.UNAUTHORIZED, ACCESS_DENIED )
+//                    );
+//                    return;
+//                }
             }
             
             // set header param email for user identification in rest service - do not decode jwt twice in rest services

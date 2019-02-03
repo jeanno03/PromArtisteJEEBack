@@ -42,17 +42,16 @@ import dto.MyVideoDto;
 import entities.MyPicture;
 import entities.MySpace;
 import entities.MyUser;
-import entities.tools.Credentials;
 import myconstants.MyConstant;
 import services.ArtistServiceLocal;
-import services.AuthenticationFilter;
 import services.EjbService;
 import services.EjbServiceInterface;
 import services.FileServiceLocal;
 import services.FrontService;
 import services.FrontServiceInterface;
-import services.ResponseBuilder;
 import services.SecurityServiceLocal;
+import tools.AuthenticationFilter;
+import tools.ResponseBuilder;
 
 
 @Path("/TestController")
@@ -267,41 +266,6 @@ try {
 	public MyUserDto toConnectPost(MyUser myUser) throws Exception{
 		MyUserDto myUserDto = artistServiceLocal.getConnect(myUser.getEmail(), myUser.getMdp());
 		return myUserDto;
-	}
-	
-	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/toConnectJwt/")
-	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/toConnectJwt/
-	//body email:jean.jean@gmail.com et mdp:1234
-	public Response toConnectJwt(MyUser myUser)throws Exception{
-		if (artistServiceLocal.getConnectBoolean(myUser.getEmail(),myUser.getMdp())) {
-			// generate a token for the user
-			String token = securityServiceLocal.generateJwtToken(myUser.getId());
-			
-			Map<String,Object> map = new HashMap<String,Object>();
-			map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, token );
-			
-			// Return the token on the response
-			return ResponseBuilder.createResponse( Response.Status.OK, map );
-		}
-		return ResponseBuilder.createResponse( Response.Status.FORBIDDEN );
-	}
-	
-	
-	//**************a essayer ********************
-//https://codinginfinite.com/authentication-java-apis-json-web-token-jwt/
-	
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/toConnectGet/{email}/{mdp}")
-	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/toConnectGet/jean.jean@gmail.com/1234/
-	public MyUserDto toConnectGet(
-			@PathParam("email") String email, 
-			@PathParam("mdp") String mdp) throws Exception {
-		MyUserDto myUserDto = artistServiceLocal.getConnect(email, mdp);
-		return myUserDto;
-
 	}
 
 
