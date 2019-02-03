@@ -17,10 +17,12 @@ public class MyUserDto {
 	private String firstName;
 	private String lastName;
 	private Collection<MySpaceDto> mySpacesDto;
+	private Collection<MyRoleDto> myRolesDto;
 	
 	public MyUserDto() {
 		super();
 		mySpacesDto = new HashSet();
+		myRolesDto = new HashSet();
 	}
 	
 	public MyUserDto(Long id, String email, String artistName, String firstName, String lastName) {
@@ -70,6 +72,14 @@ public class MyUserDto {
 
 	public void setMySpacesDto(Collection<MySpaceDto> mySpacesDto) {
 		this.mySpacesDto = mySpacesDto;
+	}
+
+	public Collection<MyRoleDto> getMyRolesDto() {
+		return myRolesDto;
+	}
+
+	public void setMyRolesDto(Collection<MyRoleDto> myRolesDto) {
+		this.myRolesDto = myRolesDto;
 	}
 
 	@Override

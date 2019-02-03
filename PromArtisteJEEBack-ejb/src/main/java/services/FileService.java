@@ -15,6 +15,7 @@ import dto.MyPictureDto;
 import dto.MySpaceDto;
 import entities.MyPicture;
 import entities.MySpace;
+import myconstants.MyConstant;
 
 
 
@@ -50,7 +51,7 @@ public class FileService implements FileServiceLocal {
 			return mySpacesDto;
 
 		}catch(NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 			return null;
 		}
 	}

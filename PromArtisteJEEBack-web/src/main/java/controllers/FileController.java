@@ -25,10 +25,10 @@ import services.FrontServiceInterface;
 @Path("/FileController")
 public class FileController {
 
-	private EjbServiceInterface ejbService = new EjbService();
-	private FrontServiceInterface frontService = new FrontService ();
-	private ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
-	private FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
+	private static EjbServiceInterface ejbService = new EjbService();
+	private static FrontServiceInterface frontService = new FrontService ();
+	private static ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
+	private static FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
 
 	public FileController() {
 		super();

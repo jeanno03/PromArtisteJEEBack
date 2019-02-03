@@ -33,40 +33,36 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-
-import tools.AuthenticationFilter;
-import tools.ResponseBuilder;
-
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
 import dto.MyPictureDto;
 import dto.MyUserDto;
 import dto.MyVideoDto;
-import entities.Credentials;
 import entities.MyPicture;
 import entities.MySpace;
 import entities.MyUser;
+import entities.tools.Credentials;
 import myconstants.MyConstant;
 import services.ArtistServiceLocal;
+import services.AuthenticationFilter;
 import services.EjbService;
 import services.EjbServiceInterface;
 import services.FileServiceLocal;
 import services.FrontService;
 import services.FrontServiceInterface;
-import services.PathService;
-import services.PathServiceInterface;
+import services.ResponseBuilder;
 import services.SecurityServiceLocal;
 
 
 @Path("/TestController")
 public class TestController {
 
-	private EjbServiceInterface ejbService = new EjbService();
-	private FrontServiceInterface frontService = new FrontService ();
-	private ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
-	private FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
-	private SecurityServiceLocal securityServiceLocal = ejbService.lookupSecurityServiceLocal();
+	private static EjbServiceInterface ejbService = new EjbService();
+	private static FrontServiceInterface frontService = new FrontService ();
+	private static ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
+	private static FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
+	private static SecurityServiceLocal securityServiceLocal = ejbService.lookupSecurityServiceLocal();
 
 	public TestController() {
 		super();
@@ -106,6 +102,7 @@ public class TestController {
 	//insertion jeu d essai dans bdd
 	public String dataTestestMyUsers(){
 		String myUsersString = artistServiceLocal.getMyUserDataTest();
+		MyConstant.LOGGER.info("data test insert into database : sucessfull");
 		return myUsersString;
 	}
 
@@ -220,9 +217,10 @@ public class TestController {
 		//Méthode plus précise car il car il faut que le nom du form corresponde à nameToDetermineInForm
 		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
 		List<InputPart> inputParts = uploadForm.get("nameToDetermineInForm");
+		
 		Date day = new Date();
 		String path = "";
-
+try {
 		for (InputPart inputPart : inputParts) {
 			try {
 
@@ -247,10 +245,15 @@ public class TestController {
 				MyPictureDto myPictureDto = artistServiceLocal.saveMyPicture(myPicture, mySpaceId);
 				System.out.println("myPictureDto.getId() : " + myPictureDto.getId());
 				System.out.println("Done");
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				MyConstant.LOGGER.info("IOException : " + ex);
 			}
 		}
+		}catch (Exception ex) {
+			MyConstant.LOGGER.info("Exception : " + ex);
+			return Response.status(500).entity("Error transfert fail").build();
+		}
+		
 		return Response.status(200)
 				.entity("uploadFile to path : " + path).build();
 	}
@@ -282,9 +285,12 @@ public class TestController {
 			// Return the token on the response
 			return ResponseBuilder.createResponse( Response.Status.OK, map );
 		}
-		return null;
+		return ResponseBuilder.createResponse( Response.Status.FORBIDDEN );
 	}
-
+	
+	
+	//**************a essayer ********************
+//https://codinginfinite.com/authentication-java-apis-json-web-token-jwt/
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

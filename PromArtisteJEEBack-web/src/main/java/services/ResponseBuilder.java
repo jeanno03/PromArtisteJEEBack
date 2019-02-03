@@ -1,4 +1,4 @@
-package tools;
+package services;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,8 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import myconstants.MyConstant;
+
 
 public class ResponseBuilder {
 
@@ -18,7 +20,8 @@ public class ResponseBuilder {
 		try {
 			jsonObject.put( "message", status.toString() );
 		}
-		catch( JSONException e ) {
+		catch( JSONException ex ) {
+			MyConstant.LOGGER.info("JSONException : " + ex);
 			return Response.status( Response.Status.INTERNAL_SERVER_ERROR ).entity( Response.Status.INTERNAL_SERVER_ERROR ).build();
 		}
 		
@@ -31,7 +34,8 @@ public class ResponseBuilder {
 		try {
 			jsonObject.put( "message", message );
 		}
-		catch( JSONException e ) {
+		catch( JSONException ex ) {
+			MyConstant.LOGGER.info("JSONException : " + ex);
 			return Response.status( Response.Status.INTERNAL_SERVER_ERROR ).entity( Response.Status.INTERNAL_SERVER_ERROR ).build();
 		}
 		
@@ -60,7 +64,8 @@ public class ResponseBuilder {
 				jsonObject.put( entry.getKey(), entry.getValue() );
 			}
 		}
-		catch( JSONException e ) {
+		catch( JSONException ex ) {
+			MyConstant.LOGGER.info("JSONException : " + ex);
 			return Response.status( Response.Status.INTERNAL_SERVER_ERROR ).entity( Response.Status.INTERNAL_SERVER_ERROR ).build();
 		}
 		

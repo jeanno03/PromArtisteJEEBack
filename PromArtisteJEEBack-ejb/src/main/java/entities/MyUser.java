@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonSerializable;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
+import dto.MyRoleDto;
 import dto.MySpaceDto;
 import dto.MyUserDto;
 import dto.MyVideoDto;
@@ -68,9 +69,13 @@ public class MyUser implements Serializable{
 	@OneToMany(mappedBy="myUser", cascade={CascadeType.ALL})
 	private Collection<MySpace> mySpaces;
 
+	@OneToMany(mappedBy="myUser", cascade= {CascadeType.ALL})
+	private Collection<MyRole> myRoles;
+
 	public MyUser() {
 		super();
 		mySpaces = new HashSet();
+		myRoles= new HashSet();
 	}
 
 	public MyUser(String email, String artistName, String firstName, String lastName) {
@@ -142,6 +147,14 @@ public class MyUser implements Serializable{
 		this.mySpaces = mySpaces;
 	}
 
+	public Collection<MyRole> getMyRoles() {
+		return myRoles;
+	}
+
+	public void setMyRoles(Collection<MyRole> myRoles) {
+		this.myRoles = myRoles;
+	}
+
 	@Override
 	public String toString() {
 		return "MyUser [id=" + id + ", email=" + email + ", artistName=" + artistName + ", firstName=" + firstName
@@ -165,15 +178,24 @@ public class MyUser implements Serializable{
 							MyVideoDto myVideoDto = new MyVideoDto (m2.getId(), m2.getName());
 							myVideosDto.add(myVideoDto);
 						}
-
 						mySpaceDto.setMyVideosDto(myVideosDto);
 					}catch(NullPointerException ex) {
 						ex.printStackTrace();
 					}
 					mySpacesDto.add(mySpaceDto);
-					myUserDto.setMySpacesDto(mySpacesDto);
-
 				}
+				myUserDto.setMySpacesDto(mySpacesDto);
+			}catch(NullPointerException ex) {
+				ex.printStackTrace();
+			}
+
+			try {
+				HashSet<MyRoleDto> myRolesDto = new HashSet();
+				for(MyRole m : this.myRoles) {
+					MyRoleDto myRoleDto = new MyRoleDto(m.getId(),m.getName());
+					myRolesDto.add(myRoleDto);
+				}
+				myUserDto.setMyRolesDto(myRolesDto);
 			}catch(NullPointerException ex) {
 				ex.printStackTrace();
 			}
@@ -184,17 +206,17 @@ public class MyUser implements Serializable{
 		return null;
 	}
 
-//	@Override
-//	public void serialize(JsonGenerator gen, SerializerProvider serializers) throws IOException {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void serializeWithType(JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
-//			throws IOException {
-//		// TODO Auto-generated method stub
-//		
-//	}
+	//	@Override
+	//	public void serialize(JsonGenerator gen, SerializerProvider serializers) throws IOException {
+	//		// TODO Auto-generated method stub
+	//		
+	//	}
+	//
+	//	@Override
+	//	public void serializeWithType(JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
+	//			throws IOException {
+	//		// TODO Auto-generated method stub
+	//		
+	//	}
 
 }

@@ -14,6 +14,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
 import myconstants.MyConstant;
+import services.ArtistService;
 
 /**
  * Session Bean implementation class MySingleton
@@ -28,7 +29,6 @@ public class MySingleton{
 		super();
 		startSingleton();
 
-		
 	}
 
 	public static MySingleton getInstance() {
@@ -38,33 +38,13 @@ public class MySingleton{
 	private void startSingleton() {
 
 		System.out.println("***********Singleton start **************");
-		getFileHandler(MyConstant.LOGGER);
-		loadPropertiesFile();
+		loadPropertiesFile();	
+		//logs start here first then follow in MyConstant
+		MyConstant.getFileHandler();
+		MyConstant.LOGGER.info("Application start");
+
 	}
 	
-	private void getFileHandler(Logger logger) {
-
-		boolean append = true;
-		Date day = new Date();
-		SimpleDateFormat formater = null;
-		formater = new SimpleDateFormat("ddMMyy");
-
-		try {  
-
-			// This block configure the logger with handler and formatter  
-			FileHandler fh = new FileHandler(MyConstant.PATH_LOG+""+formater.format(day)+"-prom-artiste.log", append);  
-			logger.addHandler(fh);
-			SimpleFormatter formatter = new SimpleFormatter();  
-			fh.setFormatter(formatter);  
-
-		} catch (SecurityException ex) {  
-			ex.printStackTrace();  
-		} catch (IOException ex) {  
-			ex.printStackTrace();  
-		}  
-
-	}
-
 	private void loadPropertiesFile() {
 
 		FileInputStream propFile = null;
@@ -79,24 +59,18 @@ public class MySingleton{
 			ex.printStackTrace();
 			
 		} catch (IOException ex) {
-			
-			MyConstant.LOGGER.info(ex.getMessage());	
-			
+			ex.printStackTrace();			
 		}finally {
 			
 			if(null!=propFile) {
 				try {
 					propFile.close();
 				}catch(Exception ex) {
-					
-					MyConstant.LOGGER.info(ex.getMessage());
-					
+					ex.printStackTrace();	
 				}
 			}
 		}
 
 	}
-	
-
 
 }

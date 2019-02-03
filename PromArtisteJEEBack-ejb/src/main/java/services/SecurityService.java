@@ -13,6 +13,8 @@ import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.lang.JoseException;
 
+import myconstants.MyConstant;
+
 /**
  * Session Bean implementation class SecurityService
  */
@@ -28,8 +30,8 @@ public class SecurityService implements SecurityServiceLocal {
 	static {
 		try {
 			rsaJsonWebKey = RsaJwkGenerator.generateJwk(2048);
-		} catch (JoseException e) {
-			e.printStackTrace();
+		} catch (JoseException ex) {
+			MyConstant.LOGGER.info("JoseException : " + ex.getMessage());
 		}
 	}
 	
@@ -104,7 +106,8 @@ public class SecurityService implements SecurityServiceLocal {
 
         //  Validate the JWT and process it to the Claims
         JwtClaims jwtClaims = jwtConsumer.processToClaims( jwt );
-        System.out.println( "JWT validation succeeded! " + jwtClaims ); 
+
+		MyConstant.LOGGER.info("JWT validation succeeded! " + jwtClaims );
         
         // validate and return the encoded user id
         return jwtClaims.getClaimsMap().get("id").toString();

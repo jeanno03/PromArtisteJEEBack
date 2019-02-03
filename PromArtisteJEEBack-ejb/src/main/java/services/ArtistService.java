@@ -30,6 +30,7 @@ import dto.MySpaceDto;
 import dto.MyUserDto;
 import dto.MyVideoDto;
 import entities.MyPicture;
+import entities.MyRole;
 
 //import org.springframework.transaction.annotation.Propagation;
 //import org.springframework.transaction.annotation.Transactional;
@@ -48,10 +49,7 @@ public class ArtistService implements ArtistServiceLocal {
 
 	@PersistenceContext(unitName = "primaryPromArtist")
 	private EntityManager em;
-	
-	private PathServiceInterface pathService = new PathService();
 
-	
 	/**
 	 * Default constructor. 
 	 */
@@ -88,6 +86,10 @@ public class ArtistService implements ArtistServiceLocal {
 			MyPicture myPicture03 = new MyPicture(day, MyConstant.PROP.getProperty("server-location")+"003.pdf", "fichier 02.pdf");
 			MyPicture myPicture04 = new MyPicture(day, MyConstant.PROP.getProperty("server-location")+"004.pdf", "fichier 02.pdf");
 			
+			MyRole myRole1 = new MyRole("admin");
+			MyRole myRole2 = new MyRole("user");
+			MyRole myRole3 = new MyRole("visitor");
+						
 			my01.setMyUser(myUser01);
 			my02.setMyUser(myUser01);
 
@@ -116,6 +118,11 @@ public class ArtistService implements ArtistServiceLocal {
 			myUser01.setMdp(mdpSha31);
 			myUser02.setMdp(mdpSha31);
 			myUser03.setMdp(mdpSha32);
+			
+			myRole1.setMyUser(myUser01);
+			myRole2.setMyUser(myUser02);
+			myRole3.setMyUser(myUser03);
+			
 			em.persist(myUser01);
 			em.persist(myUser02);
 			em.persist(myUser03);
@@ -135,10 +142,14 @@ public class ArtistService implements ArtistServiceLocal {
 
 			em.persist(myPicture01);
 			em.persist(myPicture02);
+			
+			em.persist(myRole1);
+			em.persist(myRole2);
+			em.persist(myRole3);
 
 
 		}catch(Exception ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("Exception : " + ex.getMessage());
 		}
 
 		return "it works";
@@ -153,7 +164,7 @@ public class ArtistService implements ArtistServiceLocal {
 			List<MySpace> mySpaces=qr.getResultList();
 			return mySpaces;
 		}catch(NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 		return null;
 	}
@@ -167,7 +178,7 @@ public class ArtistService implements ArtistServiceLocal {
 			List<MyUser>  myUsers=qr.getResultList();
 			return myUsers;
 		}catch(NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 		return null;
 	}
@@ -186,7 +197,7 @@ public class ArtistService implements ArtistServiceLocal {
 			return myUsersDto;
 
 		}catch(NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 		return null;
 	}
@@ -219,7 +230,7 @@ public class ArtistService implements ArtistServiceLocal {
 			return myVideosDto;
 
 		}catch(Exception ex) {
-			System.out.println("exception : " + ex);
+			MyConstant.LOGGER.info("Exception : " + ex.getMessage());
 		}
 
 		return null;
@@ -238,7 +249,7 @@ public class ArtistService implements ArtistServiceLocal {
 		try {
 			em.persist(myUser);
 		}catch(NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 	}
 	
@@ -252,7 +263,7 @@ public class ArtistService implements ArtistServiceLocal {
 			return myUserDto;
 
 		} catch (NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 		return null;
 	}
@@ -275,7 +286,7 @@ public class ArtistService implements ArtistServiceLocal {
 			MyPicture myPicture = (MyPicture) qr.getSingleResult();
 			return myPicture;		
 		} catch (NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 		return null;
 	}
@@ -288,11 +299,12 @@ public class ArtistService implements ArtistServiceLocal {
 			MyPicture myPicture = (MyPicture) qr.getSingleResult();
 			return myPicture;
 		} catch (NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 		return null;
 	}
 
+	//a refaire a partir du point
 	@Override
 	public String createMyPicturePath(String originName) {
 		//				path = pathService.getServerLocation() + newId + extension;
@@ -319,13 +331,11 @@ public class ArtistService implements ArtistServiceLocal {
 	}
 		
 	public String getStringSha3(String mdp) throws Exception { 
-//	    String input = "Hello world !"; 
+
 	    SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest512(); 
 	    byte[] digest = digestSHA3.digest(mdp.getBytes()); 
-
-//	    System.out.println("SHA3-512 = " + Hex.toHexString(digest));
 	    return Hex.toHexString(digest);
-//	    return digest.toString();
+
 	} 
 	
 	public MyUserDto getConnect(String email, String mdp) throws Exception {
@@ -345,7 +355,7 @@ public class ArtistService implements ArtistServiceLocal {
 			return null;
 		}
 		}catch(NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 		return null;
 	}
@@ -356,11 +366,7 @@ public class ArtistService implements ArtistServiceLocal {
 		qr.setParameter("paramEmail", email);
 		try {
 			MyUser myUser = (MyUser) qr.getSingleResult();
-			System.out.println("mdpSha3 : " + mdpSha3);
-			System.out.println("myUser.getMdp() : " + myUser.getMdp());
 		if(mdpSha3.equals(myUser.getMdp())) {
-//			MyUserDto myUserDto = myUser.getMyUserDto();
-//			return myUserDto;
 			return true;
 		}
 		else {
@@ -368,7 +374,7 @@ public class ArtistService implements ArtistServiceLocal {
 			return false;
 		}
 		}catch(NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
 		}
 		return false;
 	}

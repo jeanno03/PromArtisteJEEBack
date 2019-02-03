@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.ws.rs.core.MultivaluedMap;
 
+import myconstants.MyConstant;
+
 /**
  * @author jeanno
  *Cette class contient toutes les méthodes de contôles de tous les controleurs services rest
@@ -23,9 +25,10 @@ public class FrontService implements FrontServiceInterface{
 				return true;
 			}
 		}catch(NullPointerException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
+
 		}catch(ArrayIndexOutOfBoundsException ex) {
-			ex.printStackTrace();
+			MyConstant.LOGGER.info("ArrayIndexOutOfBoundsException : " + ex.getMessage());
 		}
 		return false;
 

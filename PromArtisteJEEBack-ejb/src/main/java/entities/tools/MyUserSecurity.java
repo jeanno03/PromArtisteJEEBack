@@ -1,4 +1,6 @@
-package entities;
+package entities.tools;
+
+import entities.MyUser;
 
 public class MyUserSecurity extends MyUser{
 

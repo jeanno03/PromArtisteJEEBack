@@ -63,6 +63,14 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.hibernate</groupId> -->
+		<!-- <artifactId>hibernate-entitymanager</artifactId> -->
+		<!-- <version>5.4.1.Final</version> -->
+		<!-- </dependency> -->
+
+
 		<!-- JSR-303 (Bean Validation) Implementation -->
 		<!-- Provides portable constraints such as @Email -->
 		<!-- Hibernate Validator is shipped in JBoss WildFly -->
@@ -194,6 +202,12 @@
 		</dependency>
 
 	</dependencies>
+
+<!-- 	<properties> -->
+<!-- 		<property name="hibernate.validator.apply_to_ddl">false</property> -->
+<!-- 		<property name="hibernate.validator.autoregister_listeners">false</property> -->
+<!-- 	</properties> -->
+
 
 	<build>
 		<finalName>${project.artifactId}</finalName>

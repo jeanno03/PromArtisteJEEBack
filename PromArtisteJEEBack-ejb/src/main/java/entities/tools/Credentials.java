@@ -1,4 +1,4 @@
-package entities;
+package entities.tools;
 
 public class Credentials {
 	private String email = null;

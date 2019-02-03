@@ -1,4 +1,4 @@
-package tools;
+package services;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,13 +23,10 @@ import org.apache.log4j.Logger;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 
 import entities.MyUser;
-import entities.MyUserSecurity;
+import entities.tools.MyUserSecurity;
+import myconstants.MyConstant;
 import services.ArtistServiceLocal;
-import services.EjbService;
-import services.EjbServiceInterface;
 import services.FileServiceLocal;
-import services.FrontService;
-import services.FrontServiceInterface;
 import services.SecurityServiceLocal;
 
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -101,8 +98,9 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
 			// try to decode the jwt - deny access if no valid token provided
 			try {
 				id = securityServiceLocal.validateJwtToken( jwt );
-			} catch ( InvalidJwtException e ) {
-				logger.warn("Invalid token provided!");
+			} catch ( InvalidJwtException ex ) {
+
+				MyConstant.LOGGER.info("InvalidJwtException : " + ex.getMessage());
                 requestContext.abortWith( 
                     	ResponseBuilder.createResponse( Response.Status.UNAUTHORIZED, ACCESS_INVALID_TOKEN )
                 );
@@ -117,7 +115,7 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
             	user = artistServiceLocal.getMyUserById(Long.valueOf(id));
             }
             catch ( Exception ex ) {
-            	logger.warn("Token missmatch!");
+				MyConstant.LOGGER.info("Exception : " + ex.getMessage());
                 requestContext.abortWith( 
                     	ResponseBuilder.createResponse( Response.Status.UNAUTHORIZED, ACCESS_DENIED )
                 );
