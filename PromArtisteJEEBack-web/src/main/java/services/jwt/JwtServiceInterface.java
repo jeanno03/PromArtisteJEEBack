@@ -4,6 +4,6 @@ import entities.MyUser;
 
 public interface JwtServiceInterface {
 	
-	public String getJwt(MyUser myUser) ;
+	public String getJwt(String myUserEmail) ;
 
 }

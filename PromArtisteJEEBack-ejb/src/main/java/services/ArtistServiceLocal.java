@@ -21,6 +21,7 @@ public interface ArtistServiceLocal {
 	public List<MyVideoDto> getAllMyVideoDto();
 	public void saveMyUser(MyUser myUser);
 	public MyUserDto getMyUserDtoByEmail(String email);
+	public MyUser getMyUserByEmail(String email) ;
 	public void upLoadPicture(Long myUserId, Long mySpaceId)throws InterruptedException ;
 	public MyPicture getLastMyPictureOfDay();
 	public MyPicture getLastPicture();

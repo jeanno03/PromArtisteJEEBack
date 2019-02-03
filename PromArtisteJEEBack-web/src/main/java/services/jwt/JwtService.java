@@ -7,6 +7,10 @@ import java.util.List;
 
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.lang.JoseException;
+
+import dto.MyRoleDto;
+import dto.MyUserDto;
+
 import org.jose4j.jwk.JsonWebKey;
 import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.jwk.RsaJwkGenerator;
@@ -16,9 +20,22 @@ import  org.jose4j.jws.JsonWebSignature;
 import entities.MyRole;
 import entities.MyUser;
 import myconstants.MyConstant;
+import services.ArtistServiceLocal;
+import services.EjbService;
+import services.EjbServiceInterface;
+import services.FileServiceLocal;
+import services.FrontService;
+import services.FrontServiceInterface;
+import services.SecurityServiceLocal;
 
 //https://avaldes.com/jax-rs-security-using-json-web-tokens-jwt-for-authentication-and-authorization/
 public class JwtService implements JwtServiceInterface{
+	
+	private static EjbServiceInterface ejbService = new EjbService();
+	private static FrontServiceInterface frontService = new FrontService ();
+	private static ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
+	private static FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
+	private static SecurityServiceLocal securityServiceLocal = ejbService.lookupSecurityServiceLocal();
 
 	public static List<JsonWebKey> jsonWebKeys = null;
 
@@ -39,20 +56,24 @@ public class JwtService implements JwtServiceInterface{
 			jsonWebKeys.add(jsonWebKey);
 		}
 	}
+	
 	@Override
-	public String getJwt(MyUser myUser) {
-		MyConstant.LOGGER.info("method getJwt start ");
+	public String getJwt(String myUserEmail) {
+		MyConstant.LOGGER.info("test : method getJwt start ");
 		
 		try {
+			
+			//if connection sucessfull retrieve the user
+			MyUserDto myUserDto = artistServiceLocal.getMyUserDtoByEmail(myUserEmail);
 
 			List<String> rolesString = new ArrayList();	
-			rolesString.add("adm");
-			rolesString.add("user");
-//			for(MyRole m : myUser.getMyRoles()) {
-//				rolesString.add(m.getName());			
-//				MyConstant.LOGGER.info("id add : " + m.getId());
-//				MyConstant.LOGGER.info("MyRole add : " + m.getName());
-//			}
+//			rolesString.add("adm");
+//			rolesString.add("user");
+			for(MyRoleDto m : myUserDto.getMyRolesDto()) {
+				rolesString.add(m.getName());			
+				MyConstant.LOGGER.info("id add : " + m.getId());
+				MyConstant.LOGGER.info("MyRole add : " + m.getName());
+			}
 			RsaJsonWebKey rsaJsonWebKey = (RsaJsonWebKey) jsonWebKeys.get(0);
 			rsaJsonWebKey.setKeyId("1");
 			MyConstant.LOGGER.info("rsaJsonWebKey.getKeyId().toString() " + rsaJsonWebKey.getKeyId().toString());
@@ -66,7 +87,7 @@ public class JwtService implements JwtServiceInterface{
 			jwtClaims.setGeneratedJwtId();
 			jwtClaims.setIssuedAtToNow();
 			jwtClaims.setNotBeforeMinutesInThePast(2);
-			jwtClaims.setSubject(myUser.getEmail());
+			jwtClaims.setSubject(myUserDto.getEmail());
 			jwtClaims.setStringListClaim("myRoles", rolesString);
 
 			JsonWebSignature jsonWebSignature = new JsonWebSignature();

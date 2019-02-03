@@ -267,6 +267,20 @@ public class ArtistService implements ArtistServiceLocal {
 		}
 		return null;
 	}
+	
+	@Override
+	public MyUser getMyUserByEmail(String email) {
+		TypedQuery<MyUser> qr = em.createNamedQuery("entities.MyUser.getByEmail",MyUser.class);
+		qr.setParameter("paramEmail", email);
+		try {
+			MyUser myUser = (MyUser) qr.getSingleResult();
+			return myUser;
+
+		} catch (NullPointerException ex) {
+			MyConstant.LOGGER.info("NullPointerException : " + ex.getMessage());
+		}
+		return null;
+	}
 
 	@Override
 	public void upLoadPicture(Long myUserId, Long mySpaceId) throws InterruptedException {

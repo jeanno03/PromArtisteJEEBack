@@ -52,6 +52,11 @@ public class JwtController {
 		super();
 	}
 	
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/testMyUsers
+	//insertion jeu d essai dans bdd
+	
+	
+	
 	@GET
 	@Produces("text/plain")
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController
@@ -75,7 +80,8 @@ public class JwtController {
 		
 		JwtService jwtService = new JwtService();
 		if (artistServiceLocal.getConnectBoolean(myUser.getEmail(),myUser.getMdp())) {
-			 String jwt = jwtService.getJwt(myUser);
+
+			 String jwt = jwtService.getJwt(myUser.getEmail());
 			return Response.status(200).entity(jwt).build();
 		}
 		return ResponseBuilder.createResponse( Response.Status.FORBIDDEN );
