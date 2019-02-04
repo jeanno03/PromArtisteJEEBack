@@ -76,6 +76,7 @@ public class JwtController {
 	@Path("/toConnectJwt/")
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwt
 	//body email:jean.jean@gmail.com et mdp:1234
+	//jean.jean@gmail.com 12345678
 	public Response toConnectJwt(MyUser myUser)throws Exception{
 
 		if (artistServiceLocal.getConnectBoolean(myUser.getEmail(),myUser.getMdp())) {
@@ -83,6 +84,31 @@ public class JwtController {
 			String jwt = jwtService.getJwt(myUser.getEmail());		 
 			//				return Response.status(200).entity(jwt).build();
 
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, jwt );
+
+			// Return the token on the response
+			return ResponseBuilder.createResponse( Response.Status.OK, map );
+		}
+		else {
+			return ResponseBuilder.createResponse( Response.Status.FORBIDDEN );
+		}
+
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/toConnectJwtHeader/")
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwtHeader
+	//body email:jean.jean@gmail.com et mdp:1234
+	public Response toConnectJwtHeader(
+			@HeaderParam("email") String email,
+			@HeaderParam("mdp") String mdp)
+			throws Exception{
+
+		if (artistServiceLocal.getConnectBoolean(email,mdp)) {
+
+			String jwt = jwtService.getJwt(email);		 
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, jwt );
 

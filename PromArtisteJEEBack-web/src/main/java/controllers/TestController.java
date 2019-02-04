@@ -267,6 +267,18 @@ try {
 		MyUserDto myUserDto = artistServiceLocal.getConnect(myUser.getEmail(), myUser.getMdp());
 		return myUserDto;
 	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/toConnectGet/{email}/{password}")
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/toConnectGet/
+	public MyUserDto toConnectGet(
+			@PathParam("email") String email, 
+			@PathParam("password") String password) throws Exception{
+		MyUserDto myUserDto = artistServiceLocal.getConnect(email, password);
+		return myUserDto;
+	}
+	
 
 
 }
