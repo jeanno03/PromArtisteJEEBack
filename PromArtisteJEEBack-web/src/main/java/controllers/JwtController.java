@@ -16,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.server.ResourceConfig;
 import org.jose4j.jwk.JsonWebKey;
 import org.jose4j.jwk.JsonWebKeySet;
 import org.jose4j.jwk.RsaJsonWebKey;
@@ -45,8 +46,6 @@ import services.FrontServiceInterface;
 import services.JwtService;
 import services.JwtServiceInterface;
 import services.SecurityServiceLocal;
-import tools.AuthenticationFilter;
-import tools.ResponseBuilder;
 
 @Path("/JwtController")
 public class JwtController {
@@ -57,8 +56,11 @@ public class JwtController {
 	private static FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
 	private static JwtServiceInterface jwtService = new JwtService() ;
 
+	//	final ResourceConfig resourceConfig = new ResourceConfig();
+
 	public JwtController() {
 		super();
+		//		resourceConfig.register(new CORSFilter());
 	}
 
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/TestController/testMyUsers
@@ -76,26 +78,32 @@ public class JwtController {
 	@Path("/toConnectJwt/")
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwt
 	//body email:jean.jean@gmail.com et mdp:1234
-	//jean.jean@gmail.com 12345678
+	//phou.jeannory@gmail.com 12345678
 	public Response toConnectJwt(MyUser myUser)throws Exception{
+		try {
 
-		if (artistServiceLocal.getConnectBoolean(myUser.getEmail(),myUser.getMdp())) {
 
-			String jwt = jwtService.getJwt(myUser.getEmail());		 
-			//				return Response.status(200).entity(jwt).build();
+			Boolean test = artistServiceLocal.getConnectBoolean(myUser.getEmail(),myUser.getMdp());
 
-			Map<String,Object> map = new HashMap<String,Object>();
-			map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, jwt );
+			if(test) {
+				String jwt = jwtService.getJwt(myUser.getEmail());	
+				String str = "{\"token\":\""+jwt+"\"}";
+				MyConstant.LOGGER.info("str : " + str);
+				return Response.status(Response.Status.OK).entity(str).build();
+			}
 
-			// Return the token on the response
-			return ResponseBuilder.createResponse( Response.Status.OK, map );
+		}catch(Exception ex) {
+			MyConstant.LOGGER.info("Exception : " + ex);
 		}
-		else {
-			return ResponseBuilder.createResponse( Response.Status.FORBIDDEN );
-		}
+		String errorMess = "error bad authentification";
+		String str = "{\"token\":\""+errorMess+"\"}";
+		MyConstant.LOGGER.info("str : " + str);
+		return Response.status(Response.Status.FORBIDDEN).entity(str).build();
+
+
 
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/toConnectJwtHeader/")
@@ -104,28 +112,71 @@ public class JwtController {
 	public Response toConnectJwtHeader(
 			@HeaderParam("email") String email,
 			@HeaderParam("mdp") String mdp)
-			throws Exception{
+					throws Exception{
 
-		if (artistServiceLocal.getConnectBoolean(email,mdp)) {
+		MyConstant.LOGGER.info("email : " + email);
+		MyConstant.LOGGER.info("mdp : " + mdp);
+		try {
+			Boolean test = artistServiceLocal.getConnectBoolean(email,mdp);
+			if (test) {
 
-			String jwt = jwtService.getJwt(email);		 
-			Map<String,Object> map = new HashMap<String,Object>();
-			map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, jwt );
+				String jwt = jwtService.getJwt(email);		 
+				//				Map<String,Object> map = new HashMap<String,Object>();
+				//				map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, jwt );
 
-			// Return the token on the response
-			return ResponseBuilder.createResponse( Response.Status.OK, map );
+				// Return the token on the response
+				String str = "{\"token\":\""+jwt+"\"}";
+				MyConstant.LOGGER.info("str : " + str);
+				return Response.status(Response.Status.OK).entity(str).build();
+			}
+		}catch(Exception ex) {
+			MyConstant.LOGGER.info("Exception : " + ex);
 		}
-		else {
-			return ResponseBuilder.createResponse( Response.Status.FORBIDDEN );
-		}
+		String errorMess = "error bad authentification";
+		String str = "{\"token\":\""+errorMess+"\"}";
+		MyConstant.LOGGER.info("str : " + str);
+		return Response.status(Response.Status.FORBIDDEN).entity(str).build();
+	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/toConnectJwtHeaderV2/")
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwtHeader
+	//body email:jean.jean@gmail.com et mdp:1234
+	public Response toConnectJwtHeaderV2(
+			@HeaderParam("email") String email,
+			@HeaderParam("mdp") String mdp)
+					throws Exception{
+
+		MyConstant.LOGGER.info("email : " + email);
+		MyConstant.LOGGER.info("mdp : " + mdp);
+		try {
+			Boolean test = artistServiceLocal.getConnectBoolean(email,mdp);
+			if (test) {
+
+				String jwt = jwtService.getJwt(email);		 
+				//				Map<String,Object> map = new HashMap<String,Object>();
+				//				map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, jwt );
+
+				// Return the token on the response
+				String str = "{\"token\":\""+jwt+"\"}";
+				MyConstant.LOGGER.info("str : " + str);
+				return Response.status(Response.Status.OK).entity(str).build();
+			}
+		}catch(Exception ex) {
+			MyConstant.LOGGER.info("Exception : " + ex);
+		}
+		String errorMess = "error bad authentification";
+		String str = "{\"token\":\""+errorMess+"\"}";
+		MyConstant.LOGGER.info("str : " + str);
+		return Response.status(Response.Status.FORBIDDEN).entity(str).build();
 	}
 
 	@GET
 	@Path("/getMyUserDto/{id}")
 	@Produces({MediaType.APPLICATION_JSON}) 
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/getMyUserDto/2
-	public Response getMyUserDto(@HeaderParam("x-access-token") String token, @PathParam("id") Long id)
+	public Response getMyUserDto(@HeaderParam("token") String token, @PathParam("id") Long id)
 			throws JsonGenerationException, JsonMappingException, IOException {
 
 		try {
@@ -134,11 +185,17 @@ public class JwtController {
 			MyUserDto myUserDto = artistServiceLocal.getMyUserDto(id);
 			map.put( "myUserDto", myUserDto );
 
-			return ResponseBuilder.createResponse( Response.Status.OK, map );
+			return Response.status(Response.Status.OK).entity(map).build();
 		}catch(Exception ex) {
-			return ResponseBuilder.createResponse( Response.Status.FORBIDDEN );
+			MyConstant.LOGGER.info("Exception : " + ex);
 		}
+		
+		String errorMess = "error bad authentification";
+		String str = "{\"token\":\""+errorMess+"\"}";
+		MyConstant.LOGGER.info("str : " + str);
+		return Response.status(Response.Status.FORBIDDEN).entity(str).build();
 
 	}
 
+	
 }

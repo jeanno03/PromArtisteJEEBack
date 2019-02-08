@@ -31,7 +31,7 @@ import myconstants.MyConstant;
 import services.ArtistServiceLocal;
 import services.FileServiceLocal;
 import services.SecurityServiceLocal;
-import tools.AuthenticationFilter;
+
 
 //https://avaldes.com/jax-rs-security-using-json-web-tokens-jwt-for-authentication-and-authorization/
 
@@ -46,6 +46,8 @@ public class JwtService implements JwtServiceInterface{
 	private static ArtistServiceLocal artistServiceLocal = ejbService.lookupArtistServiceLocal() ;
 	private static FileServiceLocal fileServiceLocal = ejbService.lookupFileServiceLocal() ;
 	private static SecurityServiceLocal securityServiceLocal = ejbService.lookupSecurityServiceLocal();
+	
+	public final static String AUTHORIZATION_PROPERTY = "token";
 
 	//Le serveur va vérifier si les clefs existent ici!
 	static	{
@@ -142,7 +144,7 @@ public class JwtService implements JwtServiceInterface{
 			MyConstant.LOGGER.info("JWT validation succeeded! " + jwtClaims);
 			//			MyUserDto myUserDto = artistServiceLocal.getMyUserDto(id);
 			Map<String,Object> map = new HashMap<String,Object>();
-			map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, token );
+			map.put( AUTHORIZATION_PROPERTY, token );
 			return map;
 		} catch (InvalidJwtException ex) {
 			MyConstant.LOGGER.info("InvalidJwtException :" + ex);

@@ -50,9 +50,6 @@ import services.FileServiceLocal;
 import services.FrontService;
 import services.FrontServiceInterface;
 import services.SecurityServiceLocal;
-import tools.AuthenticationFilter;
-import tools.ResponseBuilder;
-
 
 @Path("/TestController")
 public class TestController {
