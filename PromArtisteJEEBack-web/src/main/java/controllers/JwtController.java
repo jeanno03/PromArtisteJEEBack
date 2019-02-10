@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +37,7 @@ import dto.MyUserDto;
 import entities.MyPicture;
 import entities.MyRole;
 import entities.MyUser;
+import filters.CorsFilter;
 import myconstants.MyConstant;
 import services.ArtistServiceLocal;
 import services.EjbService;
@@ -75,13 +77,12 @@ public class JwtController {
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/toConnectJwt/")
-	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwt
+	@Path("/toConnectJwtPost/")
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwtPost
 	//body email:jean.jean@gmail.com et mdp:1234
 	//phou.jeannory@gmail.com 12345678
-	public Response toConnectJwt(MyUser myUser)throws Exception{
+	public Response toConnectJwtPost(MyUser myUser)throws Exception{
 		try {
-
 
 			Boolean test = artistServiceLocal.getConnectBoolean(myUser.getEmail(),myUser.getMdp());
 
@@ -89,16 +90,21 @@ public class JwtController {
 				String jwt = jwtService.getJwt(myUser.getEmail());	
 				String str = "{\"token\":\""+jwt+"\"}";
 				MyConstant.LOGGER.info("str : " + str);
-				return Response.status(Response.Status.OK).entity(str).build();
+				return Response.status(200)
+						.header("Access-Control-Allow-Origin", "*")
+						.header("Access-Control-Allow-Credentials", "true")
+						.header("Access-Control-Allow-Headers","origin, content-type, accept, authorization")
+						.header("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS, HEAD")
+						.entity(str).build();
 			}
 
 		}catch(Exception ex) {
 			MyConstant.LOGGER.info("Exception : " + ex);
 		}
 		String errorMess = "error bad authentification";
-		String str = "{\"token\":\""+errorMess+"\"}";
+		String str = "{\"error message\":\""+errorMess+"\"}";
 		MyConstant.LOGGER.info("str : " + str);
-		return Response.status(Response.Status.FORBIDDEN).entity(str).build();
+		return Response.status(401).entity(str).build();
 
 
 
@@ -108,7 +114,7 @@ public class JwtController {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/toConnectJwtHeader/")
 	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwtHeader
-	//body email:jean.jean@gmail.com et mdp:1234
+	//body email:phou.jeannory@gmail.com et mdp:12345678
 	public Response toConnectJwtHeader(
 			@HeaderParam("email") String email,
 			@HeaderParam("mdp") String mdp)
@@ -121,10 +127,6 @@ public class JwtController {
 			if (test) {
 
 				String jwt = jwtService.getJwt(email);		 
-				//				Map<String,Object> map = new HashMap<String,Object>();
-				//				map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, jwt );
-
-				// Return the token on the response
 				String str = "{\"token\":\""+jwt+"\"}";
 				MyConstant.LOGGER.info("str : " + str);
 				return Response.status(Response.Status.OK).entity(str).build();
@@ -137,12 +139,12 @@ public class JwtController {
 		MyConstant.LOGGER.info("str : " + str);
 		return Response.status(Response.Status.FORBIDDEN).entity(str).build();
 	}
-
+	//https://stackoverflow.com/questions/23450494/how-to-enable-cross-domain-requests-on-jax-rs-web-services
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.TEXT_PLAIN})
 	@Path("/toConnectJwtHeaderV2/")
-	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwtHeader
-	//body email:jean.jean@gmail.com et mdp:1234
+	//http://localhost:8080/PromArtisteJEEBack-web/rest/JwtController/toConnectJwtHeaderV2
+	//body email:phou.jeannory@gmail.com et mdp:12345678
 	public Response toConnectJwtHeaderV2(
 			@HeaderParam("email") String email,
 			@HeaderParam("mdp") String mdp)
@@ -150,18 +152,31 @@ public class JwtController {
 
 		MyConstant.LOGGER.info("email : " + email);
 		MyConstant.LOGGER.info("mdp : " + mdp);
+
+		byte[] decodeBytesEmail = Base64.getUrlDecoder().decode(email);
+		byte[] decodeBytesMdp = Base64.getUrlDecoder().decode(mdp);
+
+		String decodeUrlEmail = new String(decodeBytesEmail);
+		String decodeUrlMdp = new String(decodeBytesMdp);
+
+		MyConstant.LOGGER.info("decodeUrlEmail : " + decodeUrlEmail);
+		MyConstant.LOGGER.info("decodeUrlMdp : " + decodeUrlMdp);
+
 		try {
-			Boolean test = artistServiceLocal.getConnectBoolean(email,mdp);
+			Boolean test = artistServiceLocal.getConnectBoolean(decodeUrlEmail,decodeUrlMdp);
 			if (test) {
 
-				String jwt = jwtService.getJwt(email);		 
-				//				Map<String,Object> map = new HashMap<String,Object>();
-				//				map.put( AuthenticationFilter.AUTHORIZATION_PROPERTY, jwt );
+				String jwt = jwtService.getJwt(decodeUrlEmail);		 
 
-				// Return the token on the response
 				String str = "{\"token\":\""+jwt+"\"}";
 				MyConstant.LOGGER.info("str : " + str);
-				return Response.status(Response.Status.OK).entity(str).build();
+				return Response
+						.status(200)
+						.header("Access-Control-Allow-Origin", "*")
+						.header("Access-Control-Allow-Credentials", "true")
+						.header("Access-Control-Allow-Headers","origin, content-type, accept, authorization, email, mdp")
+						.header("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS, HEAD")
+						.entity(str).build();
 			}
 		}catch(Exception ex) {
 			MyConstant.LOGGER.info("Exception : " + ex);
@@ -169,7 +184,7 @@ public class JwtController {
 		String errorMess = "error bad authentification";
 		String str = "{\"token\":\""+errorMess+"\"}";
 		MyConstant.LOGGER.info("str : " + str);
-		return Response.status(Response.Status.FORBIDDEN).entity(str).build();
+		return Response.status(401).entity(str).build();
 	}
 
 	@GET
@@ -189,7 +204,7 @@ public class JwtController {
 		}catch(Exception ex) {
 			MyConstant.LOGGER.info("Exception : " + ex);
 		}
-		
+
 		String errorMess = "error bad authentification";
 		String str = "{\"token\":\""+errorMess+"\"}";
 		MyConstant.LOGGER.info("str : " + str);
@@ -197,5 +212,5 @@ public class JwtController {
 
 	}
 
-	
+
 }

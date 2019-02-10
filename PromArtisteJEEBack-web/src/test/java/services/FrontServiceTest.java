@@ -30,6 +30,7 @@ public class FrontServiceTest {
 	static FrontServiceInterface frontService = new FrontService ();
 
 
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		System.out.println("FrontServiceTest test start ");
@@ -105,5 +106,6 @@ public class FrontServiceTest {
 		frontService.writeFile(content, filename);
 		assertTrue("appel méthod classic", filename!=null);
 	}
+
 
 }
