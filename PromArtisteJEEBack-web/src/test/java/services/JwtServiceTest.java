@@ -41,19 +41,5 @@ class JwtServiceTest {
 		fail("Not yet implemented");
 	}
 
-	@Test
-	void testGenerateRandmoKid() {
-		int kidRandom1 = jwtService.generateRandmoKid();
-		System.out.println("kidRandom1 : " + kidRandom1);
-		assertTrue("kidRandom1 compris entre 0 et 2", kidRandom1>=0||kidRandom1<=2);
-		
-		int kidRandom2 = jwtService.generateRandmoKid();
-		System.out.println("kidRandom2 : " + kidRandom2);
-		assertTrue("kidRandom2 compris entre 0 et 2", kidRandom1>=0||kidRandom1<=2);
-		
-		int kidRandom3 = jwtService.generateRandmoKid();
-		System.out.println("kidRandom3 : " + kidRandom3);
-		assertTrue("kidRandom3 compris entre 0 et 2", kidRandom1>=0||kidRandom1<=2);
-	}
 
 }
