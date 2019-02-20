@@ -119,9 +119,19 @@ public class ArtistService implements ArtistServiceLocal {
 			myUser02.setMdp(mdpSha31);
 			myUser03.setMdp(mdpSha32);
 			
-			myRole1.setMyUser(myUser01);
-			myRole2.setMyUser(myUser02);
-			myRole3.setMyUser(myUser03);
+			HashSet <MyRole> myRole01 = new HashSet();
+			myRole01.add(myRole1);
+			myRole01.add(myRole2);
+			myRole01.add(myRole3);
+			
+			myUser03.setMyRoles(myRole01);
+			
+//			myRole1.setMyUser(myUser01);
+//			myRole2.setMyUser(myUser02);
+//			
+//			myRole1.setMyUser(myUser03);
+//			myRole2.setMyUser(myUser03);
+//			myRole3.setMyUser(myUser03);
 			
 			em.persist(myUser01);
 			em.persist(myUser02);
